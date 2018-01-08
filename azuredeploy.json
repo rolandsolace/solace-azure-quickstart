@@ -27,6 +27,19 @@
         "description": "Security group defined to support VMR default message vpn ports"
       }
     },
+    "lbName": {
+      "type": "string",
+      "defaultValue": "myLB",
+      "metadata": {
+        "description": "Load Balancer name"
+      }
+    },
+    "dnsNameforLBIP": {
+      "type": "string",
+      "metadata": {
+        "description": "DNS for Load Balancer IP"
+      }
+    },
     "dnsLabelForPublicIP": {
       "type": "string",
       "metadata": {
@@ -100,7 +113,11 @@
       "numberOfNodes": 3
     },
     "deploymentModelSingleNode": { "numberOfNodes": 1 },
-    "numberOfInstances": "[variables(concat('deploymentModel', parameters('deploymentModel'))).numberOfNodes]"
+    "numberOfInstances": "[variables(concat('deploymentModel', parameters('deploymentModel'))).numberOfNodes]",
+    "lbID": "[resourceId('Microsoft.Network/loadBalancers',parameters('lbName'))]",
+    "frontEndIPConfigID": "[concat(variables('lbID'),'/frontendIPConfigurations/LoadBalancerFrontEnd')]",
+    "lbPoolID": "[concat(variables('lbID'),'/backendAddressPools/BackendPool1')]",
+    "lbProbeID": "[concat(variables('lbID'),'/probes/tcpProbe')]"
   },
   "resources": [
     {
@@ -120,6 +137,18 @@
           "subnetPrefix": {
             "value": "[variables('subnetPrefix')]"
           }
+        }
+      }
+    },
+    {
+      "apiVersion": "2015-05-01-preview",
+      "type": "Microsoft.Network/publicIPAddresses",
+      "name": "[parameters('publicIPAddressName')]",
+      "location": "[resourceGroup().location]",
+      "properties": {
+        "publicIPAllocationMethod": "[variables('publicIPAddressType')]",
+        "dnsSettings": {
+          "domainNameLabel": "[parameters('dnsNameforLBIP')]"
         }
       }
     },
@@ -170,6 +199,7 @@
       "dependsOn": [
         "[concat('Microsoft.Network/publicIPAddresses/', variables('publicIPAddressName'), copyindex())]",
         "[concat('Microsoft.Network/virtualNetworks/', variables('virtualNetworkName'))]"
+        "[concat('Microsoft.Network/loadBalancers/', parameters('lbName'))]"
       ],
       "properties": {
         "ipConfigurations": [
@@ -183,7 +213,71 @@
               },
               "subnet": {
                 "id": "[variables('subnetRef')]"
+              },
+              "loadBalancerBackendAddressPools": [
+                {
+                  "id": "[concat(variables('lbID'), '/backendAddressPools/BackendPool1')]"
+                }
+              ],
+            }
+          }
+        ]
+      }
+    },
+    {
+      "apiVersion": "2015-05-01-preview",
+      "name": "[parameters('lbName')]",
+      "type": "Microsoft.Network/loadBalancers",
+      "location": "[resourceGroup().location]",
+      "dependsOn": [
+        "[concat('Microsoft.Network/publicIPAddresses/', parameters('publicIPAddressName'))]"
+      ],
+      "properties": {
+        "frontendIPConfigurations": [
+          {
+            "name": "LoadBalancerFrontEnd",
+            "properties": {
+              "publicIPAddress": {
+                "id": "[variables('publicIPAddressID')]"
               }
+            }
+          }
+        ],
+        "backendAddressPools": [
+          {
+            "name": "BackendPool1"
+          }
+        ],
+        "loadBalancingRules": [
+          {
+            "name": "LBRule",
+            "properties": {
+              "frontendIPConfiguration": {
+                "id": "[variables('frontEndIPConfigID')]"
+              },
+              "backendAddressPool": {
+                "id": "[variables('lbPoolID')]"
+              },
+              "protocol": "tcp",
+              "frontendPort": 80,
+              "backendPort": 80,
+              "enableFloatingIP": false,
+              "idleTimeoutInMinutes": 5,
+              "probe": {
+                "id": "[variables('lbProbeID')]"
+              }
+            }
+          }
+        ],
+        "probes": [
+          {
+            "name": "tcpProbe",
+            "properties": {
+              "protocol": "tcp",
+              "port": 5550,
+              "requestPath": "/health-check/guaranteed-active",
+              "intervalInSeconds": 5,
+              "numberOfProbes": 2
             }
           }
         ]
