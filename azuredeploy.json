@@ -96,6 +96,7 @@
     "scriptUrl": "https://raw.githubusercontent.com/SolaceLabs/solace-azure-quickstart-template/master/",
     "sharedTemplatename": "shared-resources.json",
     "solaceInstallScriptName": "deploy_vmr.sh",
+    "publicIPAddressID": "[resourceId('Microsoft.Network/publicIPAddresses',parameters('publicIPAddressName'))]",
     "publicIPAddressName": "myPublicIPD",
     "publicIPAddressType": "Dynamic",
     "vmStorageAccountVHDsName": "vhds",
