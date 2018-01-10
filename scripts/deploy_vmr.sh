@@ -192,6 +192,16 @@ docker create \
  -v softAdb:/usr/sw/internalSpool/softAdb \
  --env username_admin_globalaccesslevel=admin \
  --env username_admin_password=${password} \
+ --env logging_debug_output=stdout \
+ --env logging_command_output=stdout \
+ --env logging_system_output=stdout \
+ --env logging_event_output=stdout \
+ --env logging_kernel_output=stdout \
+ --env logging_debug_format=raw \
+ --env logging_command_format=raw \
+ --env logging_system_format=raw \
+ --env logging_event_format=raw \
+ --env logging_kernel_format=raw \
  ${redundancy_config} \
  --name=solace solace-app:${VMR_VERSION} 
 EOF

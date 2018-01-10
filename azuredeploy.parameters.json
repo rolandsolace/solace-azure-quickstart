@@ -11,6 +11,9 @@
     "adminPassword": {
       "value": "P4$$w0rd"
     },
+    "dnsNameforLBIP": {
+      "value": "GEN-UNIQUE"
+    },
     "dnsNameForPublicIP": {
       "value": "GEN-UNIQUE"
     }
