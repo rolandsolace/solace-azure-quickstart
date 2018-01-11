@@ -211,7 +211,7 @@
               },
               "loadBalancerBackendAddressPools": [
                 {
-                  "id": "[concat(variables('lbID'), '/backendAddressPools/BackendPool1')]"
+                  "id": "[concat(variables('lbID'), '/backendAddressPools/vmr-ha-group')]"
                 }
               ],
             }
