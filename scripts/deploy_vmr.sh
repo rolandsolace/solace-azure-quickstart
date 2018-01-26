@@ -305,8 +305,8 @@ if [ "${is_primary}" = "true" ]; then
   fi
 
  ./semp_query.sh -n admin -p ${password} -u http://localhost:8080/SEMP \
-         -q "<rpc semp-version='soltr/8_5VMR'><admin><config-sync><assert-master><router/></assert-master></config-sync></admin></rpc>"
+         -q "<rpc semp-version='soltr/8_7VMR'><admin><config-sync><assert-master><router/></assert-master></config-sync></admin></rpc>"
  ./semp_query.sh -n admin -p ${password} -u http://localhost:8080/SEMP \
-         -q "<rpc semp-version='soltr/8_5VMR'><admin><config-sync><assert-master><vpn-name>default</vpn-name></assert-master></config-sync></admin></rpc>"
+         -q "<rpc semp-version='soltr/8_7VMR'><admin><config-sync><assert-master><vpn-name>default</vpn-name></assert-master></config-sync></admin></rpc>"
 fi
 echo "`date` INFO: Solace VMR bringup complete"
