@@ -65,7 +65,7 @@
       },
       "allowedValues": [
         "7.2",
-        "7.3"
+        "7.3",
         "7.4"
       ]
     },
@@ -78,7 +78,7 @@
       "allowedValues": [
         "Standard_D2_v2",
         "Standard_D2_v3",
-        "Standard_F2s"
+        "Standard_F2s",
         "Standard_F2s_v2"
       ]
     },
@@ -700,6 +700,28 @@
     {
       "apiVersion": "2016-03-30",
       "type": "Microsoft.Compute/virtualMachines/extensions",
+      "name": "[concat(variables('vmName'), copyindex(), '/configureVMRSecrets')]",
+      "location": "[resourceGroup().location]",
+      "copy": {
+        "name": "DockerLoop",
+        "count": "[variables('numberOfInstances')]"
+      },
+      "dependsOn": [
+        "[concat('Microsoft.Compute/virtualMachines/', variables('vmName'), copyindex(), '/extensions/DockerExtension')]"
+      ],
+      "properties": {
+        "publisher": "Microsoft.Azure.Extensions",
+        "type": "CustomScript",
+        "typeHandlerVersion": "2.0",
+        "autoUpgradeMinorVersion": true,
+        "protectedSettings": {
+          "commandToExecute": "[concat('mkdir -p /mnt/vmr/secrets; echo ', parameters('adminPassword'), ' > /mnt/vmr/secrets/solOSpasswd')]"
+        } 
+      }
+    },
+    {
+      "apiVersion": "2016-03-30",
+      "type": "Microsoft.Compute/virtualMachines/extensions",
       "name": "[concat(variables('vmName'), copyindex(), '/configureVMRContainer')]",
       "location": "[resourceGroup().location]",
       "copy": {
@@ -707,7 +729,8 @@
         "count": "[variables('numberOfInstances')]"
       },
       "dependsOn": [
-        "[concat('Microsoft.Compute/virtualMachines/', variables('vmName'), copyindex(), '/extensions/DockerExtension')]"
+        "[concat('Microsoft.Compute/virtualMachines/', variables('vmName'), copyindex(), '/extensions/DockerExtension')]",
+        "[concat('Microsoft.Compute/virtualMachines/', variables('vmName'), copyindex(), '/extensions/configureVMRSecrets')]"
       ],
       "properties": {
         "publisher": "Microsoft.Azure.Extensions",
