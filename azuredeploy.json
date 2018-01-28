@@ -133,7 +133,8 @@
     "lbID": "[resourceId('Microsoft.Network/loadBalancers',variables('lbName'))]",
     "frontEndIPConfigID": "[concat(variables('lbID'),'/frontendIPConfigurations/LoadBalancerFrontEnd')]",
     "lbPoolID": "[concat(variables('lbID'),'/backendAddressPools/vmr-ha-group')]",
-    "lbProbeID": "[concat(variables('lbID'),'/probes/vmr-ha-ad-health-check')]"
+    "lbProbeID": "[concat(variables('lbID'),'/probes/vmr-ha-ad-health-check')]",
+    "keyVaultName" : "myKeyVault"
   },
   "resources": [
     {
@@ -583,6 +584,43 @@
           }
         ]
       }
+    },
+    {
+        "type": "Microsoft.KeyVault/vaults",
+        "name": "[variables('keyVaultName')]",
+        "apiVersion": "2015-06-01",
+        "location": "[resourceGroup().location]",
+        "properties": {
+            "enabledForDeployment": "true",
+            "enabledForTemplateDeployment": "true",
+            "enabledForVolumeEncryption": "true",
+            "tenantId": "[subscription().tenantId]",
+            "accessPolicies": [
+              {
+                "tenantId": "[subscription().tenantId]",
+                "objectId": "[parameters('objectId')]",
+                "permissions": {
+                  "keys": "all",
+                  "secrets": "all"
+                }
+              }
+            ],
+            "sku": {
+                "name": "standard",
+                "family": "A"
+            }
+        }
+    },
+    {
+        "type": "Microsoft.KeyVault/vaults/secrets",
+        "name": "[concat(variables('keyVaultName'), '/solOSpasswd",
+        "apiVersion": "2015-06-01",
+        "properties": {
+            "value": "parameters('adminPassword')"
+        },
+        "dependsOn": [
+            "[concat('Microsoft.KeyVault/vaults/', variables('keyVaultName'))]"
+        ]
     },
     {
       "name": "[parameters('storageAccountName')]",
