@@ -101,7 +101,7 @@
     "imageOffer": "Centos",
     "OSDiskName": "osdiskfordockersimple",
     "nicName": "myVMNicD",
-    "scriptUrl": "https://raw.githubusercontent.com/rolandsolace/solace-azure-quickstart/dev",
+    "scriptUrl": "https://raw.githubusercontent.com/rolandsolace/solace-azure-quickstart/dev/",
     "sharedTemplatename": "shared-resources.json",
     "solaceInstallScriptName": "deploy_vmr.sh",
     "publicIPAddressName": "myPublicIPD",
@@ -131,7 +131,7 @@
     "lbPoolID": "[concat(variables('lbID'),'/backendAddressPools/',variables('lbPoolName'))]",
     "lbProbeName": "vmr-ha-ad-health-check",
     "lbProbeID": "[concat(variables('lbID'),'/probes/',variables('lbProbeName'))]",
-    "keyVaultName" : "[concat(parameters('objectId'),'/myKeyVault')]"
+    "keyVaultName" : "[concat(parameters('storageAccountName'),'_myKeyVault')]"
   },
   "resources": [
     {
@@ -675,7 +675,7 @@
       }
     },
     {
-      "apiVersion": "2015-06-15",
+      "apiVersion": "2015-03-20",
       "type": "Microsoft.OperationalInsights/workspaces",
       "name": "[parameters('workspaceName')]",
       "location": "[resourceGroup().location]",
@@ -686,7 +686,7 @@
       },
       "resources": [
         {
-          "apiVersion": "2015-06-15",
+          "apiVersion": "2015-03-20",
           "type": "datasources",
           "name": "SyslogCollection",
           "dependsOn": [
@@ -718,10 +718,10 @@
         "typeHandlerVersion": "1.0",
         "autoUpgradeMinorVersion": true,
         "settings": {
-          "workspaceId": "[reference(resourceId('Microsoft.OperationalInsights/workspaces/', parameters('workspaceName')), '2015-06-15').customerId]"
+          "workspaceId": "[reference(resourceId('Microsoft.OperationalInsights/workspaces/', parameters('workspaceName')), '2015-03-20').customerId]"
         },
         "protectedSettings": {
-          "workspaceKey": "[listKeys(resourceId('Microsoft.OperationalInsights/workspaces/', parameters('workspaceName')), '2015-06-15').primarySharedKey]"
+          "workspaceKey": "[listKeys(resourceId('Microsoft.OperationalInsights/workspaces/', parameters('workspaceName')), '2015-03-20').primarySharedKey]"
         }
       }
     },
@@ -765,28 +765,6 @@
     {
       "apiVersion": "2016-03-30",
       "type": "Microsoft.Compute/virtualMachines/extensions",
-      "name": "[concat(variables('vmName'), copyindex(), '/configureVMRSecrets')]",
-      "location": "[resourceGroup().location]",
-      "copy": {
-        "name": "DockerLoop",
-        "count": "[variables('numberOfInstances')]"
-      },
-      "dependsOn": [
-        "[concat('Microsoft.Compute/virtualMachines/', variables('vmName'), copyindex(), '/extensions/DockerExtension')]"
-      ],
-      "properties": {
-        "publisher": "Microsoft.Azure.Extensions",
-        "type": "CustomScript",
-        "typeHandlerVersion": "2.0",
-        "autoUpgradeMinorVersion": true,
-        "protectedSettings": {
-          "commandToExecute": "[concat('mkdir -p /mnt/vmr/secrets; echo ', parameters('adminPassword'), ' > /mnt/vmr/secrets/solOSpasswd')]"
-        } 
-      }
-    },
-    {
-      "apiVersion": "2016-03-30",
-      "type": "Microsoft.Compute/virtualMachines/extensions",
       "name": "[concat(variables('vmName'), copyindex(), '/configureVMRContainer')]",
       "location": "[resourceGroup().location]",
       "copy": {
@@ -794,8 +772,7 @@
         "count": "[variables('numberOfInstances')]"
       },
       "dependsOn": [
-        "[concat('Microsoft.Compute/virtualMachines/', variables('vmName'), copyindex(), '/extensions/DockerExtension')]",
-        "[concat('Microsoft.Compute/virtualMachines/', variables('vmName'), copyindex(), '/extensions/configureVMRSecrets')]"
+        "[concat('Microsoft.Compute/virtualMachines/', variables('vmName'), copyindex(), '/extensions/DockerExtension')]"
       ],
       "properties": {
         "publisher": "Microsoft.Azure.Extensions",
@@ -807,8 +784,10 @@
             "[parameters('solaceVMR_URI')]",
             "[concat(variables('scriptUrl'), 'scripts/', variables('solaceInstallScriptName'))]",
             "[concat(variables('scriptUrl'), 'scripts/semp_query.sh')]"
-          ],
-          "commandToExecute": "[concat('bash ', variables('solaceInstallScriptName'), ' -c ', copyindex(), ' -i ', variables('nodeAddressPrefix'), ' -n ', variables('numberOfInstances'), ' -p ', parameters('adminPassword'))]"
+          ]
+        },
+        "protectedSettings": {
+          "commandToExecute": "[concat('mkdir -p /mnt/vmr/secrets; echo ', parameters('adminPassword'), ' > /mnt/vmr/secrets/solOSpasswd; bash ', variables('solaceInstallScriptName'), ' -c ', copyindex(), ' -i ', variables('nodeAddressPrefix'), ' -n ', variables('numberOfInstances'), ' -p ', parameters('adminPassword'))]"
         } 
       }
     }
