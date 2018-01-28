@@ -30,13 +30,13 @@
     "workspaceName": {
       "type": "string",
       "metadata": {
-        "description": "OMS Workspace Name"
+        "description": "OMS Workspace Name for Log Analytics"
       }
     },
     "objectId": {
       "type": "string",
       "metadata": {
-        "description": "Object ID of AD user"
+        "description": "Object ID of AD User for Key Vault"
       }
     },
     "dnsNameforLBIP": {
@@ -131,7 +131,7 @@
     "lbPoolID": "[concat(variables('lbID'),'/backendAddressPools/',variables('lbPoolName'))]",
     "lbProbeName": "vmr-ha-ad-health-check",
     "lbProbeID": "[concat(variables('lbID'),'/probes/',variables('lbProbeName'))]",
-    "keyVaultName" : "[concat('myKeyVault-',parameters('storageAccountName'))]"
+    "keyVaultName" : "[concat('myKeyVault',parameters('storageAccountName'))]"
   },
   "resources": [
     {
@@ -686,7 +686,7 @@
       },
     },
     {
-      "apiVersion": "2015-11-01-preview",
+      "apiVersion": "2015-03-20",
       "type": "Microsoft.OperationsManagement/solutions",
       "name": "[concat('Containers', '(', parameters('workspaceName'), ')')]",
       "location": "[parameters('omsWorkspaceRegion')]",
@@ -697,10 +697,10 @@
         "workspaceResourceId": "[resourceId('Microsoft.OperationalInsights/workspaces', parameters('workspaceName'))]"
       },
       "plan": {
-          "name": "[concat('Containers', '(', parameters('workspaceName'), ')')]",
-          "product": "OMSGallery/Containers",
-          "promotionCode": "",
-          "publisher": "Microsoft"
+        "name": "[concat('Containers', '(', parameters('workspaceName'), ')')]",
+        "product": "OMSGallery/Containers",
+        "promotionCode": "",
+        "publisher": "Microsoft"
       }
     },
     {
