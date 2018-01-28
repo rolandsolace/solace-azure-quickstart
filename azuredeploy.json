@@ -131,7 +131,9 @@
     "lbPoolID": "[concat(variables('lbID'),'/backendAddressPools/',variables('lbPoolName'))]",
     "lbProbeName": "vmr-ha-ad-health-check",
     "lbProbeID": "[concat(variables('lbID'),'/probes/',variables('lbProbeName'))]",
-    "keyVaultName" : "[concat('myKeyVault',parameters('storageAccountName'))]"
+    "keyVaultName" : "[concat('myKeyVault',parameters('storageAccountName'))]",
+    "adminPasswordDir" : "/mnt/vmr/secrets",
+    "adminPasswordFile" : "[concat(variables('adminPasswordDir'),'solOSpasswd']"
   },
   "resources": [
     {
@@ -240,8 +242,8 @@
     },
     {
       "apiVersion": "2015-06-15",
-      "name": "[variables('lbName')]",
       "type": "Microsoft.Network/loadBalancers",
+      "name": "[variables('lbName')]",
       "location": "[resourceGroup().location]",
       "dependsOn": [
         "[concat('Microsoft.Network/publicIPAddresses/', variables('publicIPAddressName'))]"
@@ -275,8 +277,8 @@
               "protocol": "tcp",
               "frontendPort": 2222,
               "backendPort": 2222,
-              "enableFloatingIP": false,
               "idleTimeoutInMinutes": 5,
+              "enableFloatingIP": false,
               "probe": {
                 "id": "[variables('lbProbeID')]"
               }
@@ -294,8 +296,8 @@
               "protocol": "tcp",
               "frontendPort": 8080,
               "backendPort": 8080,
-              "enableFloatingIP": false,
               "idleTimeoutInMinutes": 5,
+              "enableFloatingIP": false,
               "probe": {
                 "id": "[variables('lbProbeID')]"
               }
@@ -313,8 +315,8 @@
               "protocol": "tcp",
               "frontendPort": 943,
               "backendPort": 943,
-              "enableFloatingIP": false,
               "idleTimeoutInMinutes": 5,
+              "enableFloatingIP": false,
               "probe": {
                 "id": "[variables('lbProbeID')]"
               }
@@ -332,8 +334,8 @@
               "protocol": "tcp",
               "frontendPort": 55555,
               "backendPort": 55555,
-              "enableFloatingIP": false,
               "idleTimeoutInMinutes": 5,
+              "enableFloatingIP": false,
               "probe": {
                 "id": "[variables('lbProbeID')]"
               }
@@ -351,8 +353,8 @@
               "protocol": "tcp",
               "frontendPort": 55003,
               "backendPort": 55003,
-              "enableFloatingIP": false,
               "idleTimeoutInMinutes": 5,
+              "enableFloatingIP": false,
               "probe": {
                 "id": "[variables('lbProbeID')]"
               }
@@ -370,8 +372,8 @@
               "protocol": "tcp",
               "frontendPort": 55443,
               "backendPort": 55443,
-              "enableFloatingIP": false,
               "idleTimeoutInMinutes": 5,
+              "enableFloatingIP": false,
               "probe": {
                 "id": "[variables('lbProbeID')]"
               }
@@ -389,8 +391,8 @@
               "protocol": "tcp",
               "frontendPort": 80,
               "backendPort": 80,
-              "enableFloatingIP": false,
               "idleTimeoutInMinutes": 5,
+              "enableFloatingIP": false,
               "probe": {
                 "id": "[variables('lbProbeID')]"
               }
@@ -408,8 +410,8 @@
               "protocol": "tcp",
               "frontendPort": 443,
               "backendPort": 443,
-              "enableFloatingIP": false,
               "idleTimeoutInMinutes": 5,
+              "enableFloatingIP": false,
               "probe": {
                 "id": "[variables('lbProbeID')]"
               }
@@ -427,8 +429,8 @@
               "protocol": "tcp",
               "frontendPort": 1883,
               "backendPort": 1883,
-              "enableFloatingIP": false,
               "idleTimeoutInMinutes": 5,
+              "enableFloatingIP": false,
               "probe": {
                 "id": "[variables('lbProbeID')]"
               }
@@ -446,8 +448,8 @@
               "protocol": "tcp",
               "frontendPort": 8883,
               "backendPort": 8883,
-              "enableFloatingIP": false,
               "idleTimeoutInMinutes": 5,
+              "enableFloatingIP": false,
               "probe": {
                 "id": "[variables('lbProbeID')]"
               }
@@ -465,8 +467,8 @@
               "protocol": "tcp",
               "frontendPort": 8000,
               "backendPort": 8000,
-              "enableFloatingIP": false,
               "idleTimeoutInMinutes": 5,
+              "enableFloatingIP": false,
               "probe": {
                 "id": "[variables('lbProbeID')]"
               }
@@ -484,8 +486,8 @@
               "protocol": "tcp",
               "frontendPort": 8443,
               "backendPort": 8443,
-              "enableFloatingIP": false,
               "idleTimeoutInMinutes": 5,
+              "enableFloatingIP": false,
               "probe": {
                 "id": "[variables('lbProbeID')]"
               }
@@ -503,8 +505,8 @@
               "protocol": "tcp",
               "frontendPort": 5672,
               "backendPort": 5672,
-              "enableFloatingIP": false,
               "idleTimeoutInMinutes": 5,
+              "enableFloatingIP": false,
               "probe": {
                 "id": "[variables('lbProbeID')]"
               }
@@ -522,8 +524,8 @@
               "protocol": "tcp",
               "frontendPort": 5671,
               "backendPort": 5671,
-              "enableFloatingIP": false,
               "idleTimeoutInMinutes": 5,
+              "enableFloatingIP": false,
               "probe": {
                 "id": "[variables('lbProbeID')]"
               }
@@ -541,8 +543,8 @@
               "protocol": "tcp",
               "frontendPort": 9000,
               "backendPort": 9000,
-              "enableFloatingIP": false,
               "idleTimeoutInMinutes": 5,
+              "enableFloatingIP": false,
               "probe": {
                 "id": "[variables('lbProbeID')]"
               }
@@ -560,8 +562,8 @@
               "protocol": "tcp",
               "frontendPort": 9443,
               "backendPort": 9443,
-              "enableFloatingIP": false,
               "idleTimeoutInMinutes": 5,
+              "enableFloatingIP": false,
               "probe": {
                 "id": "[variables('lbProbeID')]"
               }
@@ -574,18 +576,18 @@
             "properties": {
               "protocol": "http",
               "port": 5550,
-              "requestPath": "/health-check/guaranteed-active",
               "intervalInSeconds": 5,
-              "numberOfProbes": 2
+              "numberOfProbes": 2,
+              "requestPath": "/health-check/guaranteed-active"
             }
           }
         ]
       }
     },
     {
-      "name": "[parameters('storageAccountName')]",
-      "type": "Microsoft.Storage/storageAccounts",
       "apiVersion": "2016-01-01",
+      "type": "Microsoft.Storage/storageAccounts",
+      "name": "[parameters('storageAccountName')]",
       "sku": {
         "name": "[variables('storageAccountType')]"
       },
@@ -698,9 +700,9 @@
       },
       "plan": {
         "name": "[concat('Containers', '(', parameters('workspaceName'), ')')]",
+        "publisher": "Microsoft",
         "product": "OMSGallery/Containers",
-        "promotionCode": "",
-        "publisher": "Microsoft"
+        "promotionCode": ""
       }
     },
     {
@@ -719,8 +721,7 @@
       "properties": {
         "publisher": "Microsoft.EnterpriseCloud.Monitoring",
         "type": "OmsAgentForLinux",
-        "typeHandlerVersion": "1.0",
-        "autoUpgradeMinorVersion": true,
+        "typeHandlerVersion": "1.4",
         "settings": {
           "workspaceId": "[reference(resourceId('Microsoft.OperationalInsights/workspaces/', parameters('workspaceName')), '2015-03-20').customerId]"
         },
@@ -791,7 +792,7 @@
           ]
         },
         "protectedSettings": {
-          "commandToExecute": "[concat('mkdir -p /mnt/vmr/secrets; echo ', parameters('adminPassword'), ' > /mnt/vmr/secrets/solOSpasswd; bash ', variables('solaceInstallScriptName'), ' -c ', copyindex(), ' -i ', variables('nodeAddressPrefix'), ' -n ', variables('numberOfInstances'), ' -p ', parameters('adminPassword'))]"
+          "commandToExecute": "[concat('mkdir -p ', variables('adminPasswordDir'), '; echo ', parameters('adminPassword'), ' > ', variables('adminPasswordFile'), '; bash ', variables('solaceInstallScriptName'), ' -c ', copyindex(), ' -i ', variables('nodeAddressPrefix'), ' -n ', variables('numberOfInstances'), ' -p ', variables('adminPasswordFile'))]"
         } 
       }
     }

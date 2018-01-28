@@ -7,7 +7,7 @@ current_index=""
 ip_prefix=""
 number_of_instances=""
 password="admin"
-passwordFile="solOSpasswd"
+password_file="solOSpasswd"
 DEBUG="-vvvv"
 is_primary="false"
 
@@ -21,7 +21,7 @@ while getopts "c:i:n:p:" opt; do
         ;;
     n)  number_of_instances=$OPTARG
         ;;
-    p)  password=$OPTARG
+    p)  password_file=$OPTARG
         ;;        
     esac
 done
@@ -32,7 +32,7 @@ shift $((OPTIND-1))
 verbose=1
 echo "`date` current_index=$current_index ,ip_prefix=$ip_prefix ,number_of_instances=$number_of_instances, \
        ,Leftovers: $@"
-
+export password=`cat ${password_file}`
 
 #Install the logical volume manager and jq for json parsing
 yum -y install lvm2
@@ -132,7 +132,7 @@ if [ ${number_of_instances} -gt 1 ]; then
       --env routername=primary \
       --env redundancy_matelink_connectvia=${ip_prefix}1 \
       --env redundancy_activestandbyrole=primary \
-      --env redundancy_group_passwordfilepath=${passwordFile} \
+      --env redundancy_group_passwordfilepath=$(basename ${password_file}) \
       --env redundancy_enable=yes \
       --env redundancy_group_node_primary_nodetype=message_routing \
       --env redundancy_group_node_primary_connectvia=${ip_prefix}0 \
@@ -149,7 +149,7 @@ if [ ${number_of_instances} -gt 1 ]; then
       --env routername=backup \
       --env redundancy_matelink_connectvia=${ip_prefix}0 \
       --env redundancy_activestandbyrole=backup \
-      --env redundancy_group_passwordfilepath=${passwordFile} \
+      --env redundancy_group_passwordfilepath=$(basename ${password_file}) \
       --env redundancy_enable=yes \
       --env redundancy_group_node_primary_nodetype=message_routing \
       --env redundancy_group_node_primary_connectvia=${ip_prefix}0 \
@@ -163,7 +163,7 @@ if [ ${number_of_instances} -gt 1 ]; then
       redundancy_config="\
       --env nodetype=monitoring \
       --env routername=monitor \
-      --env redundancy_group_passwordfilepath=${passwordFile} \
+      --env redundancy_group_passwordfilepath=$(basename ${password_file}) \
       --env redundancy_enable=yes \
       --env redundancy_group_node_primary_nodetype=message_routing \
       --env redundancy_group_node_primary_connectvia=${ip_prefix}0 \
@@ -196,7 +196,7 @@ docker create \
  -v adbBackup:/usr/sw/adb \
  -v softAdb:/usr/sw/internalSpool/softAdb \
  --env username_admin_globalaccesslevel=admin \
- --env username_admin_passwordfilepath=${passwordFile} \
+ --env username_admin_passwordfilepath=$(basename ${password_file}) \
  --env logging_debug_output=all \
  --env logging_command_output=all \
  --env logging_system_output=all \
