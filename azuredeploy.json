@@ -234,7 +234,7 @@
                 {
                   "id": "[concat(variables('lbID'), '/backendAddressPools/vmr-ha-group')]"
                 }
-              ],
+              ]
             }
           }
         ]
