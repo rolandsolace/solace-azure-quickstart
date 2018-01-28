@@ -107,7 +107,7 @@
     "imageOffer": "Centos",
     "OSDiskName": "osdiskfordockersimple",
     "nicName": "myVMNicD",
-    "scriptUrl": "https://raw.githubusercontent.com/SolaceLabs/solace-azure-quickstart-template/master/",
+    "scriptUrl": "https://raw.githubusercontent.com/rolandsolace/solace-azure-quickstart/dev",
     "sharedTemplatename": "shared-resources.json",
     "solaceInstallScriptName": "deploy_vmr.sh",
     "publicIPAddressName": "myPublicIPD",
@@ -134,7 +134,7 @@
     "frontEndIPConfigID": "[concat(variables('lbID'),'/frontendIPConfigurations/LoadBalancerFrontEnd')]",
     "lbPoolID": "[concat(variables('lbID'),'/backendAddressPools/vmr-ha-group')]",
     "lbProbeID": "[concat(variables('lbID'),'/probes/vmr-ha-ad-health-check')]",
-    "keyVaultName" : "myKeyVault"
+    "keyVaultName" : "[concat(parameters('objectId'),'/myKeyVault"
   },
   "resources": [
     {
@@ -715,10 +715,14 @@
       }
     },
     {
-      "apiVersion": "2016-06-15",
+      "apiVersion": "2015-06-15",
       "type": "Microsoft.Compute/virtualMachines/extensions",
       "name": "[concat(variables('vmName'), copyindex(), '/OMSExtension')]",
       "location": "[resourceGroup().location]",
+      "copy": {
+        "name": "DockerLoop",
+        "count": "[variables('numberOfInstances')]"
+      },
       "dependsOn": [
         "[concat('Microsoft.Compute/virtualMachines/', variables('vmName'), copyindex(), '/extensions/DockerExtension')]"
       ],
