@@ -17,7 +17,7 @@
     "adminPassword": {
       "type": "securestring",
       "metadata": {
-        "description": "Password for the Virtual Machine."
+        "description": "Password for the Virtual Machine and for the admin CLI user."
       }
     },
     "securityGroupName": {
@@ -684,49 +684,24 @@
           "name": "Free"
         }
       },
-      "resources": [
-        {
-          "apiVersion": "2015-11-01-preview",
-          "type": "datasources",
-          "name": "Syslog",
-          "dependsOn": [
-            "[concat('Microsoft.OperationalInsights/workspaces/', parameters('workspaceName'))]"
-          ],
-          "kind": "LinuxSyslog",
-          "properties": {
-            "syslogName": "kern",
-            "syslogSeverities": [
-              {
-                "severity": "emerg"
-              },
-              {
-                "severity": "alert"
-              },
-              {
-                "severity": "crit"
-              },
-              {
-                "severity": "err"
-              },
-              {
-                "severity": "warning"
-              }
-            ]
-          }
-        },
-        {
-          "apiVersion": "2015-11-01-preview",
-          "type": "datasources",
-          "name": "SyslogCollection",
-          "dependsOn": [
-            "[concat('Microsoft.OperationalInsights/workspaces/', parameters('workspaceName'))]"
-          ],
-          "kind": "LinuxSyslogCollection",
-          "properties": {
-            "state": "Enabled"
-          }
-        }
-      ]
+    },
+    {
+      "apiVersion": "2015-11-01-preview",
+      "type": "Microsoft.OperationsManagement/solutions",
+      "name": "[concat('Containers', '(', parameters('workspaceName'), ')')]",
+      "location": "[parameters('omsWorkspaceRegion')]",
+      "dependsOn": [
+        "[concat('Microsoft.OperationalInsights/workspaces/', parameters('workspaceName'))]"
+      ],
+      "properties": {
+        "workspaceResourceId": "[resourceId('Microsoft.OperationalInsights/workspaces', parameters('workspaceName'))]"
+      },
+      "plan": {
+          "name": "[concat('Containers', '(', parameters('workspaceName'), ')')]",
+          "product": "OMSGallery/Containers",
+          "promotionCode": "",
+          "publisher": "Microsoft"
+      }
     },
     {
       "apiVersion": "2015-06-15",

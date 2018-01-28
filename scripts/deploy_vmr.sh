@@ -186,6 +186,9 @@ docker create \
  --privileged=true \
  --shm-size 2g \
  --net=host \
+ --log-driver syslog \
+ --log-opt syslog-format=rfc5424micro \
+ --log-opt syslog-address=tcp://127.0.0.1:25224 \
  -v jail:/usr/sw/jail \
  -v var:/usr/sw/var \
  -v /mnt/vmr/secrets:/run/secrets \
@@ -199,11 +202,11 @@ docker create \
  --env logging_system_output=all \
  --env logging_event_output=all \
  --env logging_kernel_output=all \
- --env logging_debug_format=raw \
- --env logging_command_format=raw \
- --env logging_system_format=raw \
- --env logging_event_format=raw \
- --env logging_kernel_format=raw \
+ --env logging_debug_format=rfc5424 \
+ --env logging_command_format=rfc5424 \
+ --env logging_system_format=rfc5424 \
+ --env logging_event_format=rfc5424 \
+ --env logging_kernel_format=rfc5424 \
  ${redundancy_config} \
  --name=solace solace-app:${VMR_VERSION} 
 EOF
