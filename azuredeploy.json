@@ -27,16 +27,10 @@
         "description": "Security group defined to support VMR default message vpn ports"
       }
     },
-    "workspaceId": {
+    "workspaceName": {
       "type": "string",
       "metadata": {
-        "description": "OMS Workspace ID"
-      }
-    },
-    "workspaceKey": {
-      "type": "string",
-      "metadata": {
-        "description": "OMS Workspace Key"
+        "description": "OMS Workspace Name"
       }
     },
     "objectId": {
@@ -131,10 +125,13 @@
     "numberOfInstances": "[variables(concat('deploymentModel', parameters('deploymentModel'))).numberOfNodes]",
     "lbName" : "myLB",
     "lbID": "[resourceId('Microsoft.Network/loadBalancers',variables('lbName'))]",
-    "frontEndIPConfigID": "[concat(variables('lbID'),'/frontendIPConfigurations/LoadBalancerFrontEnd')]",
-    "lbPoolID": "[concat(variables('lbID'),'/backendAddressPools/vmr-ha-group')]",
-    "lbProbeID": "[concat(variables('lbID'),'/probes/vmr-ha-ad-health-check')]",
-    "keyVaultName" : "[concat(parameters('objectId'),'/myKeyVault"
+    "frontEndIPConfigName": "LoadBalancerFrontEnd",
+    "frontEndIPConfigID": "[concat(variables('lbID'),'/frontendIPConfigurations/',variables('frontEndIPConfigName'))]",
+    "lbPoolName": "vmr-ha-group",
+    "lbPoolID": "[concat(variables('lbID'),'/backendAddressPools/',variables('lbPoolName'))]",
+    "lbProbeName": "vmr-ha-ad-health-check",
+    "lbProbeID": "[concat(variables('lbID'),'/probes/',variables('lbProbeName'))]",
+    "keyVaultName" : "[concat(parameters('objectId'),'/myKeyVault')]"
   },
   "resources": [
     {
@@ -233,7 +230,7 @@
               },
               "loadBalancerBackendAddressPools": [
                 {
-                  "id": "[concat(variables('lbID'), '/backendAddressPools/vmr-ha-group')]"
+                  "id": "[variables('lbPoolID')]"
                 }
               ]
             }
@@ -252,7 +249,7 @@
       "properties": {
         "frontendIPConfigurations": [
           {
-            "name": "LoadBalancerFrontEnd",
+            "name": "[variables('frontEndIPConfigName')]",
             "properties": {
               "publicIPAddress": {
                 "id": "[variables('publicIPAddressID')]"
@@ -262,7 +259,7 @@
         ],
         "backendAddressPools": [
           {
-            "name": "vmr-ha-group"
+            "name": "[variables('lbPoolName')]"
           }
         ],
         "loadBalancingRules": [
@@ -573,7 +570,7 @@
         ],
         "probes": [
           {
-            "name": "vmr-ha-ad-health-check",
+            "name": "[variables('lbProbeName')]",
             "properties": {
               "protocol": "http",
               "port": 5550,
@@ -584,43 +581,6 @@
           }
         ]
       }
-    },
-    {
-        "type": "Microsoft.KeyVault/vaults",
-        "name": "[variables('keyVaultName')]",
-        "apiVersion": "2015-06-01",
-        "location": "[resourceGroup().location]",
-        "properties": {
-            "enabledForDeployment": "true",
-            "enabledForTemplateDeployment": "true",
-            "enabledForVolumeEncryption": "true",
-            "tenantId": "[subscription().tenantId]",
-            "accessPolicies": [
-              {
-                "tenantId": "[subscription().tenantId]",
-                "objectId": "[parameters('objectId')]",
-                "permissions": {
-                  "keys": "all",
-                  "secrets": "all"
-                }
-              }
-            ],
-            "sku": {
-                "name": "standard",
-                "family": "A"
-            }
-        }
-    },
-    {
-        "type": "Microsoft.KeyVault/vaults/secrets",
-        "name": "[concat(variables('keyVaultName'), '/solOSpasswd",
-        "apiVersion": "2015-06-01",
-        "properties": {
-            "value": "parameters('adminPassword')"
-        },
-        "dependsOn": [
-            "[concat('Microsoft.KeyVault/vaults/', variables('keyVaultName'))]"
-        ]
     },
     {
       "name": "[parameters('storageAccountName')]",
@@ -716,6 +676,31 @@
     },
     {
       "apiVersion": "2015-06-15",
+      "type": "Microsoft.OperationalInsights/workspaces",
+      "name": "[parameters('workspaceName')]",
+      "location": "[resourceGroup().location]",
+      "properties": {
+        "sku": {
+          "name": "Free"
+        }
+      },
+      "resources": [
+        {
+          "apiVersion": "2015-06-15",
+          "type": "datasources",
+          "name": "SyslogCollection",
+          "dependsOn": [
+            "[concat('Microsoft.OperationalInsights/workspaces/', parameters('workspaceName'))]"
+          ],
+          "kind": "LinuxSyslogCollection",
+          "properties": {
+            "state": "Enabled"
+          }
+        }
+      ]
+    },
+    {
+      "apiVersion": "2015-06-15",
       "type": "Microsoft.Compute/virtualMachines/extensions",
       "name": "[concat(variables('vmName'), copyindex(), '/OMSExtension')]",
       "location": "[resourceGroup().location]",
@@ -724,7 +709,8 @@
         "count": "[variables('numberOfInstances')]"
       },
       "dependsOn": [
-        "[concat('Microsoft.Compute/virtualMachines/', variables('vmName'), copyindex(), '/extensions/DockerExtension')]"
+        "[concat('Microsoft.Compute/virtualMachines/', variables('vmName'), copyindex(), '/extensions/DockerExtension')]",
+        "[concat('Microsoft.OperationalInsights/workspaces/', parameters('workspaceName'))]"
       ],
       "properties": {
         "publisher": "Microsoft.EnterpriseCloud.Monitoring",
@@ -732,12 +718,49 @@
         "typeHandlerVersion": "1.0",
         "autoUpgradeMinorVersion": true,
         "settings": {
-            "workspaceId": "[parameters('workspaceId')]"
+          "workspaceId": "[reference(resourceId('Microsoft.OperationalInsights/workspaces/', parameters('workspaceName')), '2015-06-15').customerId]"
         },
         "protectedSettings": {
-            "workspaceKey": "[parameters('workspaceKey')]"
+          "workspaceKey": "[listKeys(resourceId('Microsoft.OperationalInsights/workspaces/', parameters('workspaceName')), '2015-06-15').primarySharedKey]"
         }
       }
+    },
+    {
+      "apiVersion": "2015-06-01",
+      "type": "Microsoft.KeyVault/vaults",
+      "name": "[variables('keyVaultName')]",
+      "location": "[resourceGroup().location]",
+      "properties": {
+        "enabledForDeployment": "true",
+        "enabledForTemplateDeployment": "true",
+        "enabledForVolumeEncryption": "true",
+        "tenantId": "[subscription().tenantId]",
+        "accessPolicies": [
+          {
+            "tenantId": "[subscription().tenantId]",
+            "objectId": "[parameters('objectId')]",
+            "permissions": {
+              "keys": "all",
+              "secrets": "all"
+            }
+          }
+        ],
+        "sku": {
+          "name": "standard",
+          "family": "A"
+        }
+      }
+    },
+    {
+      "apiVersion": "2015-06-01",
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "name": "[concat(variables('keyVaultName'), '/solOSpasswd",
+      "properties": {
+        "value": "parameters('adminPassword')"
+      },
+      "dependsOn": [
+        "[concat('Microsoft.KeyVault/vaults/', variables('keyVaultName'))]"
+      ]
     },
     {
       "apiVersion": "2016-03-30",
