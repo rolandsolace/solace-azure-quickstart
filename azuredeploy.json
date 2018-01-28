@@ -131,7 +131,7 @@
     "lbPoolID": "[concat(variables('lbID'),'/backendAddressPools/',variables('lbPoolName'))]",
     "lbProbeName": "vmr-ha-ad-health-check",
     "lbProbeID": "[concat(variables('lbID'),'/probes/',variables('lbProbeName'))]",
-    "keyVaultName" : "[concat(parameters('storageAccountName'),'_myKeyVault')]"
+    "keyVaultName" : "[concat('myKeyVault-',parameters('storageAccountName'))]"
   },
   "resources": [
     {
@@ -686,7 +686,36 @@
       },
       "resources": [
         {
-          "apiVersion": "2015-03-20",
+          "apiVersion": "2015-11-01-preview",
+          "type": "datasources",
+          "name": "Syslog",
+          "dependsOn": [
+            "[concat('Microsoft.OperationalInsights/workspaces/', parameters('workspaceName'))]"
+          ],
+          "kind": "LinuxSyslog",
+          "properties": {
+            "syslogName": "kern",
+            "syslogSeverities": [
+              {
+                "severity": "emerg"
+              },
+              {
+                "severity": "alert"
+              },
+              {
+                "severity": "crit"
+              },
+              {
+                "severity": "err"
+              },
+              {
+                "severity": "warning"
+              }
+            ]
+          }
+        },
+        {
+          "apiVersion": "2015-11-01-preview",
           "type": "datasources",
           "name": "SyslogCollection",
           "dependsOn": [
@@ -714,7 +743,7 @@
       ],
       "properties": {
         "publisher": "Microsoft.EnterpriseCloud.Monitoring",
-        "type": "MicrosoftMonitoringAgent",
+        "type": "OmsAgentForLinux",
         "typeHandlerVersion": "1.0",
         "autoUpgradeMinorVersion": true,
         "settings": {

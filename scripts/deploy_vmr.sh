@@ -7,6 +7,7 @@ current_index=""
 ip_prefix=""
 number_of_instances=""
 password="admin"
+passwordFile="solOSpasswd"
 DEBUG="-vvvv"
 is_primary="false"
 
@@ -131,7 +132,7 @@ if [ ${number_of_instances} -gt 1 ]; then
       --env routername=primary \
       --env redundancy_matelink_connectvia=${ip_prefix}1 \
       --env redundancy_activestandbyrole=primary \
-      --env redundancy_group_password=${password} \
+      --env redundancy_group_passwordfilepath=${passwordFile} \
       --env redundancy_enable=yes \
       --env redundancy_group_node_primary_nodetype=message_routing \
       --env redundancy_group_node_primary_connectvia=${ip_prefix}0 \
@@ -148,7 +149,7 @@ if [ ${number_of_instances} -gt 1 ]; then
       --env routername=backup \
       --env redundancy_matelink_connectvia=${ip_prefix}0 \
       --env redundancy_activestandbyrole=backup \
-      --env redundancy_group_password=${password} \
+      --env redundancy_group_passwordfilepath=${passwordFile} \
       --env redundancy_enable=yes \
       --env redundancy_group_node_primary_nodetype=message_routing \
       --env redundancy_group_node_primary_connectvia=${ip_prefix}0 \
@@ -162,7 +163,7 @@ if [ ${number_of_instances} -gt 1 ]; then
       redundancy_config="\
       --env nodetype=monitoring \
       --env routername=monitor \
-      --env redundancy_group_password=${password} \
+      --env redundancy_group_passwordfilepath=${passwordFile} \
       --env redundancy_enable=yes \
       --env redundancy_group_node_primary_nodetype=message_routing \
       --env redundancy_group_node_primary_connectvia=${ip_prefix}0 \
@@ -187,16 +188,17 @@ docker create \
  --net=host \
  -v jail:/usr/sw/jail \
  -v var:/usr/sw/var \
+ -v /mnt/vmr/secrets:/run/secrets \
  -v internalSpool:/usr/sw/internalSpool \
  -v adbBackup:/usr/sw/adb \
  -v softAdb:/usr/sw/internalSpool/softAdb \
  --env username_admin_globalaccesslevel=admin \
- --env username_admin_password=${password} \
- --env logging_debug_output=stdout \
- --env logging_command_output=stdout \
- --env logging_system_output=stdout \
- --env logging_event_output=stdout \
- --env logging_kernel_output=stdout \
+ --env username_admin_passwordfilepath=${passwordFile} \
+ --env logging_debug_output=all \
+ --env logging_command_output=all \
+ --env logging_system_output=all \
+ --env logging_event_output=all \
+ --env logging_kernel_output=all \
  --env logging_debug_format=raw \
  --env logging_command_format=raw \
  --env logging_system_format=raw \
