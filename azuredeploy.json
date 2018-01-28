@@ -39,6 +39,12 @@
         "description": "OMS Workspace Key"
       }
     },
+    "objectId": {
+      "type": "string",
+      "metadata": {
+        "description": "Object ID of AD user"
+      }
+    },
     "dnsNameforLBIP": {
       "type": "string",
       "metadata": {
@@ -55,22 +61,25 @@
       "type": "string",
       "defaultValue": "7.2",
       "metadata": {
-        "description": "The Centos version for deploying the Docker containers. This will pick a fully patched image of this given Centos version. Allowed values: 7.2, 7.3"
+        "description": "The Centos version for deploying the Docker containers. This will pick a fully patched image of this given Centos version. Allowed values: 7.2, 7.3, 7.4"
       },
       "allowedValues": [
         "7.2",
         "7.3"
+        "7.4"
       ]
     },
     "vmSize": {
       "type": "string",
       "defaultValue": "Standard_D2_v2",
       "metadata": {
-        "description": "The size of the VM. Requires at lest 2 cores and 4GB of memory. Allowed values: DS2_V2, F2S"
+        "description": "The size of the VM. Requires at lest 2 cores and 4GB of memory. Allowed values: DS2_V2, DS2_V3, F2S, F2S_V2"
       },
       "allowedValues": [
         "Standard_D2_v2",
+        "Standard_D2_v3",
         "Standard_F2s"
+        "Standard_F2s_v2"
       ]
     },
     "solaceVMR_URI": {
@@ -148,7 +157,7 @@
       }
     },
     {
-      "apiVersion": "2015-05-01-preview",
+      "apiVersion": "2015-06-15",
       "type": "Microsoft.Network/publicIPAddresses",
       "name": "[variables('publicIPAddressName')]",
       "location": "[resourceGroup().location]",
@@ -232,7 +241,7 @@
       }
     },
     {
-      "apiVersion": "2015-05-01-preview",
+      "apiVersion": "2015-06-15",
       "name": "[variables('lbName')]",
       "type": "Microsoft.Network/loadBalancers",
       "location": "[resourceGroup().location]",
@@ -576,6 +585,46 @@
       }
     },
     {
+        "type": "Microsoft.KeyVault/vaults",
+        "name": "[parameters('keyVaultName')]",
+        "apiVersion": "2015-06-01",
+        "location": "[resourceGroup().location]",
+        "tags": {
+            "displayName": "KeyVault"
+        },
+        "properties": {
+            "enabledForDeployment": "true",
+            "enabledForTemplateDeployment": "true",
+            "enabledForVolumeEncryption": "true",
+            "tenantId": "[subscription().tenantId]",
+            "accessPolicies": [
+              {
+                "tenantId": "[subscription().tenantId]",
+                "objectId": "[parameters('objectId')]",
+                "permissions": {
+                  "keys": "all",
+                  "secrets": "all"
+                }
+              }
+            ],
+            "sku": {
+                "name": "standard",
+                "family": "A"
+            }
+        }
+    },
+    {
+        "type": "Microsoft.KeyVault/vaults/secrets",
+        "name": "[concat(parameters('keyVaultName'), '/solOSpasswd",
+        "apiVersion": "2015-06-01",
+        "properties": {
+            "value": "parameters('adminPassword')"
+        },
+        "dependsOn": [
+            "[concat('Microsoft.KeyVault/vaults/', parameters('keyVaultName'))]"
+        ],
+    },
+    {
       "name": "[parameters('storageAccountName')]",
       "type": "Microsoft.Storage/storageAccounts",
       "apiVersion": "2016-01-01",
@@ -644,13 +693,13 @@
               "id": "[resourceId('Microsoft.Network/networkInterfaces', concat(variables('nicName'), copyindex()))]"
             }
           ]
-        }
+        },
       }
     },
     {
+      "apiVersion": "2016-03-30",
       "type": "Microsoft.Compute/virtualMachines/extensions",
       "name": "[concat(variables('vmName'), copyindex(), '/DockerExtension')]",
-      "apiVersion": "2016-03-30",
       "location": "[resourceGroup().location]",
       "copy": {
         "name": "DockerLoop",
@@ -668,12 +717,12 @@
       }
     },
     {
+      "apiVersion": "2016-06-15",
       "type": "Microsoft.Compute/virtualMachines/extensions",
       "name": "[concat(variables('vmName'), copyindex(), '/OMSExtension')]",
-      "apiVersion": "2016-06-15",
       "location": "[resourceGroup().location]",
       "dependsOn": [
-        "[concat('Microsoft.Compute/virtualMachines/', variables('vmName'), copyindex())]"
+        "[concat('Microsoft.Compute/virtualMachines/', variables('vmName'), copyindex(), '/extensions/DockerExtension')]"
       ],
       "properties": {
         "publisher": "Microsoft.EnterpriseCloud.Monitoring",
@@ -691,6 +740,28 @@
     {
       "apiVersion": "2016-03-30",
       "type": "Microsoft.Compute/virtualMachines/extensions",
+      "name": "[concat(variables('vmName'), copyindex(), '/configureVMRSecrets')]",
+      "location": "[resourceGroup().location]",
+      "copy": {
+        "name": "DockerLoop",
+        "count": "[variables('numberOfInstances')]"
+      },
+      "dependsOn": [
+        "[concat('Microsoft.Compute/virtualMachines/', variables('vmName'), copyindex(), '/extensions/DockerExtension')]"
+      ],
+      "properties": {
+        "publisher": "Microsoft.Azure.Extensions",
+        "type": "CustomScript",
+        "typeHandlerVersion": "2.0",
+        "autoUpgradeMinorVersion": true,
+        "protectedSettings": {
+          "commandToExecute": "[concat('mkdir -p /mnt/vmr/secrets; echo ', parameters('adminPassword'), ' > /mnt/vmr/secrets/solOSpasswd')]"
+        } 
+      }
+    },
+    {
+      "apiVersion": "2016-03-30",
+      "type": "Microsoft.Compute/virtualMachines/extensions",
       "name": "[concat(variables('vmName'), copyindex(), '/configureVMRContainer')]",
       "location": "[resourceGroup().location]",
       "copy": {
@@ -698,7 +769,8 @@
         "count": "[variables('numberOfInstances')]"
       },
       "dependsOn": [
-        "[concat('Microsoft.Compute/virtualMachines/', variables('vmName'), copyindex(), '/extensions/DockerExtension')]"
+        "[concat('Microsoft.Compute/virtualMachines/', variables('vmName'), copyindex(), '/extensions/DockerExtension')]",
+        "[concat('Microsoft.Compute/virtualMachines/', variables('vmName'), copyindex(), '/extensions/configureVMRSecrets')]"
       ],
       "properties": {
         "publisher": "Microsoft.Azure.Extensions",
@@ -711,7 +783,7 @@
             "[concat(variables('scriptUrl'), 'scripts/', variables('solaceInstallScriptName'))]",
             "[concat(variables('scriptUrl'), 'scripts/semp_query.sh')]"
           ],
-          "commandToExecute": "[concat('bash ', variables('solaceInstallScriptName'), ' -c ', copyindex(), ' -i ', variables('nodeAddressPrefix'), ' -n ', variables('numberOfInstances'), ' -p ', parameters('adminPassword'))]"   
+          "commandToExecute": "[concat('bash ', variables('solaceInstallScriptName'), ' -c ', copyindex(), ' -i ', variables('nodeAddressPrefix'), ' -n ', variables('numberOfInstances'), ' -p ', parameters('adminPassword'))]"
         } 
       }
     }
