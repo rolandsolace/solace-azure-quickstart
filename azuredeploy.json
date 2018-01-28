@@ -39,7 +39,7 @@
         "description": "Object ID of AD User for Key Vault"
       }
     },
-    "dnsNameforLBIP": {
+    "dnsNameforLbIP": {
       "type": "string",
       "metadata": {
         "description": "DNS for Load Balancer IP"
@@ -131,9 +131,28 @@
     "lbPoolID": "[concat(variables('lbID'),'/backendAddressPools/',variables('lbPoolName'))]",
     "lbProbeName": "vmr-ha-ad-health-check",
     "lbProbeID": "[concat(variables('lbID'),'/probes/',variables('lbProbeName'))]",
+    "syslogFacilities": [
+      "kern",
+      "user",
+      "daemon",
+      "auth",
+      "syslog",
+      "uucp",
+      "authpriv",
+      "ftp",
+      "cron",
+      "local0.warning",
+      "local1.warning",
+      "local2.warning",
+      "local3.warning",
+      "local4.warning",
+      "local5.warning",
+      "local6.warning",
+      "local7.warning"
+    ],
     "keyVaultName" : "[concat('myKeyVault',parameters('storageAccountName'))]",
     "adminPasswordDir" : "/mnt/vmr/secrets",
-    "adminPasswordFile" : "[concat(variables('adminPasswordDir'),'solOSpasswd']"
+    "adminPasswordFile" : "[concat(variables('adminPasswordDir'),'/solOSpasswd')]"
   },
   "resources": [
     {
@@ -686,12 +705,47 @@
           "name": "Free"
         }
       },
+      "resources": [
+        {
+          "apiVersion": "2015-11-01-preview",
+          "type": "datasources",
+          "name": "[concat('syslog', variables('syslogFacilities')[copyIndex()])]",
+          "dependsOn": [
+            "[concat('Microsoft.OperationalInsights/workspaces/', parameters('workspaceName'))]"
+          ],
+          "copy": {
+            "name": "FacilityLoop",
+            "count": "[length(variables('syslogFacilities')]"
+          },
+          "kind": "LinuxSyslog",
+          "properties": {
+            "syslogName": "[variables('syslogFacilities')[copyIndex()])]",
+            "syslogSeverities": [
+              {
+                "severity": "emerg"
+              },
+              {
+                "severity": "alert"
+              },
+              {
+                "severity": "crit"
+              },
+              {
+                "severity": "err"
+              },
+              {
+                "severity": "warning"
+              }
+            ]
+          }
+        }
+      ]
     },
     {
-      "apiVersion": "2015-03-20",
+      "apiVersion": "2015-11-01-preview",
       "type": "Microsoft.OperationsManagement/solutions",
       "name": "[concat('Containers', '(', parameters('workspaceName'), ')')]",
-      "location": "[parameters('omsWorkspaceRegion')]",
+      "location": "[resourceGroup().location]",
       "dependsOn": [
         "[concat('Microsoft.OperationalInsights/workspaces/', parameters('workspaceName'))]"
       ],
@@ -711,7 +765,7 @@
       "name": "[concat(variables('vmName'), copyindex(), '/OMSExtension')]",
       "location": "[resourceGroup().location]",
       "copy": {
-        "name": "DockerLoop",
+        "name": "OMSLoop",
         "count": "[variables('numberOfInstances')]"
       },
       "dependsOn": [
