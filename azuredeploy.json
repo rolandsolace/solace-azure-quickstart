@@ -150,7 +150,7 @@
       "local6",
       "local7"
     ],
-    "keyVaultName" : "[concat('myKeyVault',parameters('storageAccountName'))]",
+    "keyVaultName" : "[concat(resourceGroup().name,'KeyVault')]",
     "adminPasswordDir" : "/mnt/vmr/secrets",
     "adminPasswordFile" : "[concat(variables('adminPasswordDir'),'/solOSpasswd')]"
   },
@@ -801,15 +801,18 @@
       "type": "Microsoft.KeyVault/vaults",
       "name": "[variables('keyVaultName')]",
       "location": "[resourceGroup().location]",
+      "dependsOn": [
+        "[concat('Microsoft.Compute/virtualMachines/', variables('vmName'), '0')]"
+      ],
       "properties": {
         "enabledForDeployment": "true",
         "enabledForTemplateDeployment": "true",
         "enabledForVolumeEncryption": "true",
-        "tenantId": "[subscription().tenantId]",
+        "tenantId": "[reference(concat('Microsoft.Compute/virtualMachines/', variables('vmName'), '0'), '2015-06-15', 'Full').identity.tenantId]",
         "accessPolicies": [
           {
-            "tenantId": "[subscription().tenantId]",
-            "objectId": "[parameters('objectId')]",
+            "tenantId": "[reference(concat('Microsoft.Compute/virtualMachines/', variables('vmName'), '0'), '2015-06-15', 'Full').identity.tenantId]",
+            "objectId": "[reference(concat('Microsoft.Compute/virtualMachines/', variables('vmName'), '0'), '2015-06-15', 'Full').identity.principalId]",
             "permissions": {
               "keys": "all",
               "secrets": "all"
