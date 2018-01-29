@@ -7,8 +7,6 @@ current_index=""
 ip_prefix=""
 number_of_instances=""
 password_file="solOSpasswd"
-disk_size=""
-disk_volume=""
 DEBUG="-vvvv"
 is_primary="false"
 
@@ -24,10 +22,6 @@ while getopts "c:i:n:p:" opt; do
         ;;
     p)  password_file=$OPTARG
         ;;
-    s)  disk_size=$OPTARG
-        ;;
-    v)  disk_volume=$OPTARG
-        ;;
     esac
 done
 
@@ -36,7 +30,7 @@ shift $((OPTIND-1))
 
 verbose=1
 echo "`date` current_index=$current_index , ip_prefix=$ip_prefix , number_of_instances=$number_of_instances , \
-      password_file=password_file , disk_size=$disk_size , disk_volume=$disk_volume , Leftovers: $@"
+      password_file=password_file , Leftovers: $@"
 export password=`cat ${password_file}`
 
 #Install the logical volume manager and jq for json parsing

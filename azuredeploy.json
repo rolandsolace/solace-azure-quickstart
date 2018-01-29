@@ -70,20 +70,6 @@
         "Standard_F2s_v2"
       ]
     },
-    "dataDiskSize": {
-      "type": "string",
-      "defaultValue": "0",
-      "metadata": {
-        "description": "The size of the data disk in GB. Allowed values: 0, 20, 40, 80, 160"
-      },
-      "allowedValues": [
-        "0",
-        "20",
-        "40",
-        "80",
-        "160"
-      ]
-    },
     "solaceVmrUri": {
         "type": "string",
         "metadata": {
@@ -160,8 +146,7 @@
       "local7"
     ],
     "adminPasswordDir" : "/mnt/vmr/secrets",
-    "adminPasswordFile" : "[concat(variables('adminPasswordDir'),'/solOSpasswd')]",
-    "dataDiskVolume" : "/dev/sdb"
+    "adminPasswordFile" : "[concat(variables('adminPasswordDir'),'/solOSpasswd')]"
   },
   "resources": [
     {
@@ -830,7 +815,7 @@
           ]
         },
         "protectedSettings": {
-          "commandToExecute": "[concat('mkdir -p -m 600 ', variables('adminPasswordDir'), '; echo ', parameters('adminPassword'), ' > ', variables('adminPasswordFile'), '; bash ', variables('solaceInstallScriptName'), ' -c ', copyindex(), ' -i ', variables('nodeAddressPrefix'), ' -n ', variables('numberOfInstances'), ' -p ', variables('adminPasswordFile'), ' -p ', variables('adminPasswordFile'), ' -p ', variables('adminPasswordFile'))]"
+          "commandToExecute": "[concat('mkdir -p -m 600 ', variables('adminPasswordDir'), '; echo ', parameters('adminPassword'), ' > ', variables('adminPasswordFile'), '; bash ', variables('solaceInstallScriptName'), ' -c ', copyindex(), ' -i ', variables('nodeAddressPrefix'), ' -n ', variables('numberOfInstances'), ' -p ', variables('adminPasswordFile'))]"
         } 
       }
     }
