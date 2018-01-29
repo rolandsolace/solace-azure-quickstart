@@ -5,51 +5,51 @@
     "storageAccountName": {
       "type": "string",
       "metadata": {
-        "description": "Unique DNS Label for the Storage Account where the Virtual Machine's disks will be placed."
+        "description": "Unique DNS Label for the Storage Account where the disks of the Virtual Machine(s) will be placed."
       }
     },
     "adminUsername": {
       "type": "string",
       "metadata": {
-        "description": "Username for the Virtual Machine."
+        "description": "Username for the Virtual Machine(s)."
       }
     },
     "adminPassword": {
       "type": "securestring",
       "metadata": {
-        "description": "Password for the Virtual Machine and for the admin CLI user."
+        "description": "Password for the Virtual Machine(s) and for the admin CLI user."
       }
     },
     "securityGroupName": {
       "type": "string",
       "defaultValue": "vmr-security",
       "metadata": {
-        "description": "Security group defined to support VMR default message vpn ports"
+        "description": "Security group defined to support VMR system level and default message vpn ports."
       }
     },
     "workspaceName": {
       "type": "string",
       "metadata": {
-        "description": "Unique OMS Workspace Name for Log Analytics"
+        "description": "Unique OMS Workspace Name for Log Analytics."
       }
     },
-    "dnsNameForLbIP": {
+    "dnsLabelForLbIP": {
       "type": "string",
       "metadata": {
-        "description": "Unique DNS Name for Load Balancer IP"
+        "description": "Unique DNS Label for the Public IP used to access the Load Balancer."
       }
     },
-    "dnsLabelForPublicIP": {
+    "dnsLabelForVmIP": {
       "type": "string",
       "metadata": {
-        "description": "Unique DNS Label for the Public IP used to access the Virtual Machine."
+        "description": "Unique DNS Label for the Public IP used to access the Virtual Machine(s)."
       }
     },
     "centOSVersion": {
       "type": "string",
       "defaultValue": "7.2",
       "metadata": {
-        "description": "The Centos version for deploying the Docker containers. This will pick a fully patched image of this given Centos version. Allowed values: 7.2, 7.3, 7.4"
+        "description": "The CentOS version for deploying the Docker containers. This will pick a fully patched image of this given CentOS version. Allowed values: 7.2, 7.3, 7.4"
       },
       "allowedValues": [
         "7.2",
@@ -177,7 +177,7 @@
       "properties": {
         "publicIPAllocationMethod": "[variables('publicIPAddressType')]",
         "dnsSettings": {
-          "domainNameLabel": "[parameters('dnsNameforLBIP')]"
+          "domainNameLabel": "[parameters('dnsLabelForLbIP')]"
         }
       }
     },
@@ -193,7 +193,7 @@
       "properties": {
         "publicIPAllocationMethod": "[variables('publicIPAddressType')]",
         "dnsSettings": {
-          "domainNameLabel": "[concat(parameters('dnsLabelForPublicIP'), copyindex())]"
+          "domainNameLabel": "[concat(parameters('dnsLabelForVmIP'), copyindex())]"
         }
       }
     },

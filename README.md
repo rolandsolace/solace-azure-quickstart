@@ -32,7 +32,7 @@ This is a 2 step process:
 
 * Hit the "Deploy to Azure" button, and in the deployment template add the link to the VMR provided by Solace. 
 
-<a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FSolaceLabs%2Fsolace-azure-quickstart-template%2Fmaster%2Fazuredeploy.json" target="_blank">
+<a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Frolandsolace%2Fsolace-azure-quickstart%2Fdev%2Fazuredeploy.json" target="_blank">
     <img src="http://azuredeploy.net/deploybutton.png"/>
 </a>
 <a href="http://armviz.io/#/?load=https%3A%2F%2Fraw.githubusercontent.com%2FSolaceLabs%2Fsolace-azure-quickstart-template%2Fmaster%2Fazuredeploy.json" target="_blank">
@@ -44,9 +44,10 @@ The fields that you need to fill out are:
 2.	Location - Select region most suitable to you.
 3.	Storage Account Name – New or existing storage account, your VHD will be stored here.
 4.	Admin Username - Username for the virtual Machine.
-5.	Admin Password - Password for the virtual Machine.
+5.	Admin Password - Password for the virtual Machine and for the admin CLI user.
 6.	Security Group Name – New or existing security group, VMR default ports will be made publicly available.
-7.	DNS Label – Used for the public DNS name for the virtual machine.
+7.  DNS Name for Load Balancer – Used for the public DNS name for the virtual machine.
+7.	DNS Label for Public IP – Used for the public DNS name for the virtual machine.
 8.	CentOS version – Use Centos 7.2 or CentOS 7.3
 9.	VM Size – Use Standard_D2_V2 or Standard_F2s
 10.	Solace VMR URI – The URI link from the registration email received during Step 1 of the install process.

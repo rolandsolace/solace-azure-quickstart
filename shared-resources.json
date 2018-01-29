@@ -6,14 +6,14 @@
         "type": "string",
         "defaultValue": "vmr-security",
         "metadata": {
-          "description": "Security group defined to support VMR default message vpn ports"
+          "description": "Security group defined to support VMR system level and default message vpn ports."
         }
       },
       "subnetPrefix": {
         "type": "string",
         "defaultValue": "10.0.0.0/24",
         "metadata": {
-          "description": "Subnet for VMRS"
+          "description": "Subnet for VMRs."
         }
       } 
     },
