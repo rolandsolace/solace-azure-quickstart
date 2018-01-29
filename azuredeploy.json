@@ -33,12 +33,6 @@
         "description": "OMS Workspace Name for Log Analytics"
       }
     },
-    "objectId": {
-      "type": "string",
-      "metadata": {
-        "description": "Object ID of AD User for Key Vault"
-      }
-    },
     "dnsNameForLbIP": {
       "type": "string",
       "metadata": {
