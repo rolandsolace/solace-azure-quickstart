@@ -40,18 +40,18 @@ This is a 2 step process:
 </a>
 
 The fields that you need to fill out are:
-1.	Resource Group - A new group, or an existing group that will be available in the pulldown menu once "Use existing" is selected.
+1.	Resource Group - A new group, or an existing group that will be available from the pull-down menu once "Use existing" is selected.
 2.	Location - Select region most suitable to you.
-3.	Storage Account Name – New or existing storage account, your VHD will be stored here.
-4.	Admin Username - Username for the virtual Machine.
-5.	Admin Password - Password for the virtual Machine and for the admin CLI user.
-6.	Security Group Name – New or existing security group, VMR default ports will be made publicly available.
-7.  DNS Name for Load Balancer – Used for the public DNS name for the virtual machine.
-7.	DNS Label for Public IP – Used for the public DNS name for the virtual machine.
-8.	CentOS version – Use Centos 7.2 or CentOS 7.3
-9.	VM Size – Use Standard_D2_V2 or Standard_F2s
+3.	Storage Account Name – New or existing storage account, where your VHD will be stored.
+4.	Admin Username - Username for the virtual Machine(s).
+5.	Admin Password - Password for the virtual Machine(s) and for the admin CLI user.
+6.	Security Group Name – New or existing security group, where VMR default ports will be made publicly available.
+7.  DNS Label for LB IP – Used for the public DNS name of the Load Balancer.
+7.	DNS Label for VM IP – Used for the public DNS name of each virtual Machine(s).
+8.	CentOS Version – Use CentOS 7.2, 7.3, or 7.4.
+9.	VM Size – Use Standard_D2_v2, Standard_D2_v3, Standard_F2s, or Standard_F2s_v2
 10.	Solace VMR URI – The URI link from the registration email received during Step 1 of the install process.
-11.	Deployment Model - High Availability, Single Node
+11.	Deployment Model - High Availability or Single Node.
 
 
 After completing the template fields and accepting the legal terms, you need to purchase the deployment, the cost will only be related to the Azure instance costs.
@@ -62,6 +62,11 @@ In this example the resource group is testvmr3, the Microsoft.Template template 
 
 ![alt text](images/deployment.png "deployment progress")
 
+In addition to the above resources, the deployment creates an Azure Load Balancer that gives you management and data access to the currently AD-Active VMR.
+
+Microsoft OMS (Operations Management Suite) Agents are also installed on each VMR to collect and send logs to a new or existing Azure Log Analytics workspace that aggregates logs and diagnostics of each virtual machine in the deployment.
+
+
 # Gaining admin access to the VMR
 
 For persons used to working with Solace message router console access, this is still available with the Azure instance.  The [connect] button to the upper left displays this information: Use the "Admin Username" and "Admin Password" provided.
@@ -69,15 +74,17 @@ For persons used to working with Solace message router console access, this is s
 ![alt text](images/remote_access.png "console with SolOS cli")
 
 Once you have access to the base OS command line you can access the SolOS CLI with the following command:
+
 ```
 sudo docker exec -it solace /usr/sw/loads/currentload/bin/cli -A
 ```
-It would be advised to change the SolOS cli admin user password, as per these [instructions](http://docs.solace.com/Configuring-and-Managing-Routers/Configuring-Internal-CLI-User-Accounts.htm#Changing-CLI-User-Passwords)
-
 
 If you are unfamiliar with the Solace message router, or would prefer an administration application, the SolAdmin management application is available. For more information on SolAdmin see the [SolAdmin page](http://dev.solace.com/tech/soladmin/).  To get SolAdmin, visit the Solace [download page](http://dev.solace.com/downloads/) and select OS version desired.  Management IP will be the External IP associated with your Azure instance and the port will be 8080 by default.
 
 ![alt text](images/azure-soladmin.png "soladmin connection to gce")
+
+To manage the currently AD-Active VMR, you can open a CLI SSH connection (on port 2222) or connect SolAdmin (on port 8080) to the Public IP address associated with the Load balancer as the admin user.
+
 
 # Testing data access to the VMR
 
@@ -88,6 +95,7 @@ To test data traffic though the newly created VMR instance, visit the Solace dev
 # Troubleshouting VMR startup
 
 All startup logs are located here: /var/lib/waagent/custom-script/download/0/ and are readable by root only.
+Host and Container logs and diagnostics are collected and aggregated in a Azure Log Analytics workspace that can be viewed and analyzed from the Azure Portal under More services > Intelligence + Analytics > Log Analytics
 
 ## Contributing
 

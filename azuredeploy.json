@@ -45,7 +45,7 @@
         "description": "Unique DNS Label for the Public IP used to access the Virtual Machine(s)."
       }
     },
-    "centOsVersion": {
+    "centosVersion": {
       "type": "string",
       "defaultValue": "7.2",
       "metadata": {
@@ -70,7 +70,7 @@
         "Standard_F2s_v2"
       ]
     },
-    "diskSize": {
+    "dataDiskSize": {
       "type": "string",
       "defaultValue": "0",
       "metadata": {
@@ -84,7 +84,7 @@
         "160"
       ]
     },
-    "solaceVMR_URI": {
+    "solaceVmrUri": {
         "type": "string",
         "metadata": {
             "description": "The URI location of the Solace VMR Docker container tarball"
@@ -663,7 +663,7 @@
           "imageReference": {
             "publisher": "[variables('imagePublisher')]",
             "offer": "[variables('imageOffer')]",
-            "sku": "[parameters('centOsVersion')]",
+            "sku": "[parameters('centosVersion')]",
             "version": "latest"
           },
           "osDisk": {
@@ -674,18 +674,6 @@
             "caching": "ReadWrite",
             "createOption": "FromImage"
           },
-          "dataDisks": [
-            {
-              "name": "[concat(variables('vmName'), copyindex(), '-datadisk1')]",
-              "diskSizeGB": "[parameters('diskSize')]",
-              "lun": 0,
-              "vhd": {
-                "uri": "[concat('http://',parameters('storageAccountName'),'.blob.core.windows.net/',variables('vmStorageAccountVHDsName'),'/',variables('dataDiskName'),copyindex(),'.vhd')]"
-              },
-              "caching": "ReadWrite",
-              "createOption": "Empty"
-            }
-          ]
         },
         "networkProfile": {
           "networkInterfaces": [
@@ -836,13 +824,13 @@
         "autoUpgradeMinorVersion": true,
         "settings": {
           "fileUris": [
-            "[parameters('solaceVMR_URI')]",
+            "[parameters('solaceVmrUri')]",
             "[concat(variables('scriptUrl'), 'scripts/', variables('solaceInstallScriptName'))]",
             "[concat(variables('scriptUrl'), 'scripts/semp_query.sh')]"
           ]
         },
         "protectedSettings": {
-          "commandToExecute": "[concat('mkdir -p ', variables('adminPasswordDir'), '; echo ', parameters('adminPassword'), ' > ', variables('adminPasswordFile'), '; bash ', variables('solaceInstallScriptName'), ' -c ', copyindex(), ' -i ', variables('nodeAddressPrefix'), ' -n ', variables('numberOfInstances'), ' -p ', variables('adminPasswordFile'), ' -p ', variables('adminPasswordFile'), ' -p ', variables('adminPasswordFile'))]"
+          "commandToExecute": "[concat('mkdir -p -m 600 ', variables('adminPasswordDir'), '; echo ', parameters('adminPassword'), ' > ', variables('adminPasswordFile'), '; bash ', variables('solaceInstallScriptName'), ' -c ', copyindex(), ' -i ', variables('nodeAddressPrefix'), ' -n ', variables('numberOfInstances'), ' -p ', variables('adminPasswordFile'), ' -p ', variables('adminPasswordFile'), ' -p ', variables('adminPasswordFile'))]"
         } 
       }
     }

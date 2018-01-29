@@ -65,7 +65,7 @@
                             "destinationPortRange": "8300-8302",
                             "destinationAddressPrefix": "[parameters('subnetPrefix')]"
                         }
-                    },                  
+                    },
                     {
                         "name": "ssh",
                         "properties": {
