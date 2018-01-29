@@ -188,7 +188,7 @@ docker create \
  --net=host \
  --log-driver syslog \
  --log-opt syslog-format=rfc5424micro \
- --log-opt syslog-address=tcp://127.0.0.1:25224 \
+ --log-opt syslog-address=udp://127.0.0.1:25224 \
  -v jail:/usr/sw/jail \
  -v var:/usr/sw/var \
  -v /mnt/vmr/secrets:/run/secrets \

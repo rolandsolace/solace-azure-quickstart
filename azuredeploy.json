@@ -39,7 +39,7 @@
         "description": "Object ID of AD User for Key Vault"
       }
     },
-    "dnsNameforLbIP": {
+    "dnsNameForLbIP": {
       "type": "string",
       "metadata": {
         "description": "DNS for Load Balancer IP"
@@ -141,14 +141,14 @@
       "authpriv",
       "ftp",
       "cron",
-      "local0.warning",
-      "local1.warning",
-      "local2.warning",
-      "local3.warning",
-      "local4.warning",
-      "local5.warning",
-      "local6.warning",
-      "local7.warning"
+      "local0",
+      "local1",
+      "local2",
+      "local3",
+      "local4",
+      "local5",
+      "local6",
+      "local7"
     ],
     "keyVaultName" : "[concat('myKeyVault',parameters('storageAccountName'))]",
     "adminPasswordDir" : "/mnt/vmr/secrets",
@@ -708,41 +708,8 @@
       "resources": [
         {
           "apiVersion": "2015-11-01-preview",
-          "type": "datasources",
-          "name": "[concat('syslog', variables('syslogFacilities')[copyIndex()])]",
-          "dependsOn": [
-            "[concat('Microsoft.OperationalInsights/workspaces/', parameters('workspaceName'))]"
-          ],
-          "copy": {
-            "name": "FacilityLoop",
-            "count": "[length(variables('syslogFacilities')]"
-          },
-          "kind": "LinuxSyslog",
-          "properties": {
-            "syslogName": "[variables('syslogFacilities')[copyIndex()])]",
-            "syslogSeverities": [
-              {
-                "severity": "emerg"
-              },
-              {
-                "severity": "alert"
-              },
-              {
-                "severity": "crit"
-              },
-              {
-                "severity": "err"
-              },
-              {
-                "severity": "warning"
-              }
-            ]
-          }
-        },
-        {
-          "apiVersion": "2015-11-01-preview",
-          "type": "datasources",
-          "name": "SyslogCollection",
+          "type": "Microsoft.OperationalInsights/workspaces/datasources",
+          "name": "[concat(parameters('workspaceName'), '/syslogCollection')]",
           "dependsOn": [
             "[concat('Microsoft.OperationalInsights/workspaces/', parameters('workspaceName'))]"
           ],
@@ -752,6 +719,39 @@
           }
         }
       ]
+    },
+    {
+      "apiVersion": "2015-11-01-preview",
+      "type": "Microsoft.OperationalInsights/workspaces/datasources",
+      "name": "[concat(parameters('workspaceName'), '/syslog', copyIndex())]",
+      "dependsOn": [
+        "[concat('Microsoft.OperationalInsights/workspaces/', parameters('workspaceName'))]"
+      ],
+      "copy": {
+        "name": "FacilityLoop",
+        "count": "[length(variables('syslogFacilities'))]"
+      },
+      "kind": "LinuxSyslog",
+      "properties": {
+        "syslogName": "[variables('syslogFacilities')[copyIndex()]]",
+        "syslogSeverities": [
+          {
+            "severity": "emerg"
+          },
+          {
+            "severity": "alert"
+          },
+          {
+            "severity": "crit"
+          },
+          {
+            "severity": "err"
+          },
+          {
+            "severity": "warning"
+          }
+        ]
+      }
     },
     {
       "apiVersion": "2015-11-01-preview",
