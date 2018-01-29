@@ -194,9 +194,8 @@ docker create \
  --ulimit nofile=2448:38048 \
  --ulimit core=-1 \
  --net=host \
- --log-driver syslog \
- --log-opt syslog-format=rfc3164 \
- --log-opt syslog-address=udp://127.0.0.1:25224 \
+ --log-driver=fluentd \
+ --log-opt fluentd-address=localhost:25225 \
  -v jail:/usr/sw/jail \
  -v var:/usr/sw/var \
  -v /mnt/vmr/secrets:/run/secrets \
