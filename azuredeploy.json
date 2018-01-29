@@ -33,19 +33,19 @@
         "description": "Unique OMS Workspace Name for Log Analytics."
       }
     },
-    "dnsLabelForLbIP": {
+    "dnsLabelForLbIp": {
       "type": "string",
       "metadata": {
         "description": "Unique DNS Label for the Public IP used to access the Load Balancer."
       }
     },
-    "dnsLabelForVmIP": {
+    "dnsLabelForVmIp": {
       "type": "string",
       "metadata": {
         "description": "Unique DNS Label for the Public IP used to access the Virtual Machine(s)."
       }
     },
-    "centOSVersion": {
+    "centOsVersion": {
       "type": "string",
       "defaultValue": "7.2",
       "metadata": {
@@ -68,6 +68,20 @@
         "Standard_D2_v3",
         "Standard_F2s",
         "Standard_F2s_v2"
+      ]
+    },
+    "diskSize": {
+      "type": "string",
+      "defaultValue": "0",
+      "metadata": {
+        "description": "The size of the data disk in GB. Allowed values: 0, 20, 40, 80, 160"
+      },
+      "allowedValues": [
+        "0",
+        "20",
+        "40",
+        "80",
+        "160"
       ]
     },
     "solaceVMR_URI": {
@@ -145,9 +159,9 @@
       "local6",
       "local7"
     ],
-    "keyVaultName" : "[concat(resourceGroup().name,'KeyVault')]",
     "adminPasswordDir" : "/mnt/vmr/secrets",
-    "adminPasswordFile" : "[concat(variables('adminPasswordDir'),'/solOSpasswd')]"
+    "adminPasswordFile" : "[concat(variables('adminPasswordDir'),'/solOSpasswd')]",
+    "dataDiskVolume" : "/dev/sdb"
   },
   "resources": [
     {
@@ -178,7 +192,7 @@
       "properties": {
         "publicIPAllocationMethod": "[variables('publicIPAddressType')]",
         "dnsSettings": {
-          "domainNameLabel": "[parameters('dnsLabelForLbIP')]"
+          "domainNameLabel": "[parameters('dnsLabelForLbIp')]"
         }
       }
     },
@@ -194,7 +208,7 @@
       "properties": {
         "publicIPAllocationMethod": "[variables('publicIPAddressType')]",
         "dnsSettings": {
-          "domainNameLabel": "[concat(parameters('dnsLabelForVmIP'), copyindex())]"
+          "domainNameLabel": "[concat(parameters('dnsLabelForVmIp'), copyindex())]"
         }
       }
     },
@@ -649,7 +663,7 @@
           "imageReference": {
             "publisher": "[variables('imagePublisher')]",
             "offer": "[variables('imageOffer')]",
-            "sku": "[parameters('centOSVersion')]",
+            "sku": "[parameters('centOsVersion')]",
             "version": "latest"
           },
           "osDisk": {
@@ -663,7 +677,7 @@
           "dataDisks": [
             {
               "name": "[concat(variables('vmName'), copyindex(), '-datadisk1')]",
-              "diskSizeGB": "60",
+              "diskSizeGB": "[parameters('diskSize')]",
               "lun": 0,
               "vhd": {
                 "uri": "[concat('http://',parameters('storageAccountName'),'.blob.core.windows.net/',variables('vmStorageAccountVHDsName'),'/',variables('dataDiskName'),copyindex(),'.vhd')]"
@@ -804,46 +818,6 @@
       }
     },
     {
-      "apiVersion": "2015-06-01",
-      "type": "Microsoft.KeyVault/vaults",
-      "name": "[variables('keyVaultName')]",
-      "location": "[resourceGroup().location]",
-      "dependsOn": [
-        "[concat('Microsoft.Compute/virtualMachines/', variables('vmName'), '0')]"
-      ],
-      "properties": {
-        "enabledForDeployment": "true",
-        "enabledForTemplateDeployment": "true",
-        "enabledForVolumeEncryption": "true",
-        "tenantId": "[reference(concat('Microsoft.Compute/virtualMachines/', variables('vmName'), '0'), '2017-03-30', 'Full').identity.tenantId]",
-        "accessPolicies": [
-          {
-            "tenantId": "[reference(concat('Microsoft.Compute/virtualMachines/', variables('vmName'), '0'), '2017-03-30', 'Full').identity.tenantId]",
-            "objectId": "[reference(concat('Microsoft.Compute/virtualMachines/', variables('vmName'), '0'), '2017-03-30', 'Full').identity.principalId]",
-            "permissions": {
-              "keys": "all",
-              "secrets": "all"
-            }
-          }
-        ],
-        "sku": {
-          "name": "standard",
-          "family": "A"
-        }
-      }
-    },
-    {
-      "apiVersion": "2015-06-01",
-      "type": "Microsoft.KeyVault/vaults/secrets",
-      "name": "[concat(variables('keyVaultName'), '/solOSpasswd",
-      "properties": {
-        "value": "parameters('adminPassword')"
-      },
-      "dependsOn": [
-        "[concat('Microsoft.KeyVault/vaults/', variables('keyVaultName'))]"
-      ]
-    },
-    {
       "apiVersion": "2016-03-30",
       "type": "Microsoft.Compute/virtualMachines/extensions",
       "name": "[concat(variables('vmName'), copyindex(), '/configureVMRContainer')]",
@@ -868,7 +842,7 @@
           ]
         },
         "protectedSettings": {
-          "commandToExecute": "[concat('mkdir -p ', variables('adminPasswordDir'), '; echo ', parameters('adminPassword'), ' > ', variables('adminPasswordFile'), '; bash ', variables('solaceInstallScriptName'), ' -c ', copyindex(), ' -i ', variables('nodeAddressPrefix'), ' -n ', variables('numberOfInstances'), ' -p ', variables('adminPasswordFile'))]"
+          "commandToExecute": "[concat('mkdir -p ', variables('adminPasswordDir'), '; echo ', parameters('adminPassword'), ' > ', variables('adminPasswordFile'), '; bash ', variables('solaceInstallScriptName'), ' -c ', copyindex(), ' -i ', variables('nodeAddressPrefix'), ' -n ', variables('numberOfInstances'), ' -p ', variables('adminPasswordFile'), ' -p ', variables('adminPasswordFile'), ' -p ', variables('adminPasswordFile'))]"
         } 
       }
     }

@@ -14,10 +14,10 @@
     "workspaceName": {
       "value": "GEN-UNIQUE"
     },
-    "dnsLabelForLbIP": {
+    "dnsLabelForLbIp": {
       "value": "GEN-UNIQUE"
     },
-    "dnsLabelForVmIP": {
+    "dnsLabelForVmIp": {
       "value": "GEN-UNIQUE"
     }
   }
