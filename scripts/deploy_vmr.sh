@@ -184,10 +184,14 @@ tee /root/docker-create <<-EOF
 #!/bin/bash 
 docker create \
  --privileged=true \
+ --uts=host \
  --shm-size 2g \
+ --ulimit memlock=-1 \
+ --ulimit nofile=2448:38048 \
+ --ulimit core=-1 \
  --net=host \
  --log-driver syslog \
- --log-opt syslog-format=rfc5424micro \
+ --log-opt syslog-format=rfc3164 \
  --log-opt syslog-address=udp://127.0.0.1:25224 \
  -v jail:/usr/sw/jail \
  -v var:/usr/sw/var \
@@ -202,11 +206,11 @@ docker create \
  --env logging_system_output=all \
  --env logging_event_output=all \
  --env logging_kernel_output=all \
- --env logging_debug_format=rfc5424 \
- --env logging_command_format=rfc5424 \
- --env logging_system_format=rfc5424 \
- --env logging_event_format=rfc5424 \
- --env logging_kernel_format=rfc5424 \
+ --env logging_debug_format=raw \
+ --env logging_command_format=raw \
+ --env logging_system_format=raw \
+ --env logging_event_format=raw \
+ --env logging_kernel_format=raw \
  ${redundancy_config} \
  --name=solace solace-app:${VMR_VERSION} 
 EOF

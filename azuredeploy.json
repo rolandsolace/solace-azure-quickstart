@@ -802,11 +802,11 @@
         "enabledForDeployment": "true",
         "enabledForTemplateDeployment": "true",
         "enabledForVolumeEncryption": "true",
-        "tenantId": "[reference(concat('Microsoft.Compute/virtualMachines/', variables('vmName'), '0'), '2015-06-15', 'Full').identity.tenantId]",
+        "tenantId": "[reference(concat('Microsoft.Compute/virtualMachines/', variables('vmName'), '0'), '2017-03-30', 'Full').identity.tenantId]",
         "accessPolicies": [
           {
-            "tenantId": "[reference(concat('Microsoft.Compute/virtualMachines/', variables('vmName'), '0'), '2015-06-15', 'Full').identity.tenantId]",
-            "objectId": "[reference(concat('Microsoft.Compute/virtualMachines/', variables('vmName'), '0'), '2015-06-15', 'Full').identity.principalId]",
+            "tenantId": "[reference(concat('Microsoft.Compute/virtualMachines/', variables('vmName'), '0'), '2017-03-30', 'Full').identity.tenantId]",
+            "objectId": "[reference(concat('Microsoft.Compute/virtualMachines/', variables('vmName'), '0'), '2017-03-30', 'Full').identity.principalId]",
             "permissions": {
               "keys": "all",
               "secrets": "all"
