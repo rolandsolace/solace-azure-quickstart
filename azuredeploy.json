@@ -30,13 +30,13 @@
     "workspaceName": {
       "type": "string",
       "metadata": {
-        "description": "OMS Workspace Name for Log Analytics"
+        "description": "Unique OMS Workspace Name for Log Analytics"
       }
     },
     "dnsNameForLbIP": {
       "type": "string",
       "metadata": {
-        "description": "DNS for Load Balancer IP"
+        "description": "Unique DNS Name for Load Balancer IP"
       }
     },
     "dnsLabelForPublicIP": {
@@ -661,7 +661,7 @@
           },
           "dataDisks": [
             {
-              "name": "[concat(variables('vmName'),'-dataDisk0')]",
+              "name": "[concat(variables('vmName'), copyindex(), '-dataDisk0')]",
               "diskSizeGB": "60",
               "lun": 0,
               "caching": "ReadWrite",
