@@ -658,7 +658,16 @@
             },
             "caching": "ReadWrite",
             "createOption": "FromImage"
-          }
+          },
+          "dataDisks": [
+            {
+              "name": "[concat(parameters('vmName'),'-dataDisk0')]",
+              "diskSizeGB": "60",
+              "lun": 0,
+              "caching": "ReadWrite",
+              "createOption": "Empty"
+            }
+          ]
         },
         "networkProfile": {
           "networkInterfaces": [
