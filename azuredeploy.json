@@ -661,7 +661,7 @@
           },
           "dataDisks": [
             {
-              "name": "[concat(parameters('vmName'),'-dataDisk0')]",
+              "name": "[concat(variables('vmName'),'-dataDisk0')]",
               "diskSizeGB": "60",
               "lun": 0,
               "caching": "ReadWrite",
