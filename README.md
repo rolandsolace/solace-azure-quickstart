@@ -40,18 +40,18 @@ This is a 2 step process:
 </a>
 
 The fields that you need to fill out are:
-1.	Resource Group - A new group, or an existing group that will be available from the pull-down menu once "Use existing" is selected.
-2.	Location - Select region most suitable to you.
-3.	Storage Account Name – New or existing storage account, where your VHD will be stored.
-4.	Admin Username - Username for the virtual Machine(s).
-5.	Admin Password - Password for the virtual Machine(s) and for the admin CLI user.
-6.	Security Group Name – New or existing security group, where VMR default ports will be made publicly available.
-7.  DNS Label for LB IP – Used for the public DNS name of the Load Balancer.
-7.	DNS Label for VM IP – Used for the public DNS name of each virtual Machine(s).
-8.	CentOS Version – Use CentOS 7.2, 7.3, or 7.4.
-9.	VM Size – Use Standard_D2_v2, Standard_D2_v3, Standard_F2s, or Standard_F2s_v2
-10.	Solace VMR URI – The URI link from the registration email received during Step 1 of the install process.
-11.	Deployment Model - High Availability or Single Node.
+1.  Resource Group - A new group, or an existing group that will be available from the pull-down menu once "Use existing" is selected.
+2.  Location - Select region most suitable to you.
+3.  Storage Account Name - New or existing storage account, where your VHD will be stored.
+4.  Admin Username - Username for the virtual Machine(s).
+5.  Admin Password - Password for the virtual Machine(s) and for the admin CLI user.
+6.  Security Group Name - New or existing security group, where VMR default ports will be made publicly available.
+7.  DNS Label for LB IP - Used for the public DNS name of the Load Balancer.
+8.  DNS Label for VM IP - Used for the public DNS name of each virtual Machine(s).
+9.  CentOS Version - Use CentOS 7.2, 7.3, or 7.4.
+10. VM Size - Use Standard_D2_v2, Standard_D2_v3, Standard_F2s, or Standard_F2s_v2.
+11. Solace VMR URI - The URI link from the registration email received during Step 1 of the install process.
+12. Deployment Model - High Availability or Single Node.
 
 
 After completing the template fields and accepting the legal terms, you need to purchase the deployment, the cost will only be related to the Azure instance costs.
@@ -83,7 +83,7 @@ If you are unfamiliar with the Solace message router, or would prefer an adminis
 
 ![alt text](images/azure-soladmin.png "soladmin connection to gce")
 
-To manage the currently AD-Active VMR, you can open a CLI SSH connection (on port 2222) or connect SolAdmin (on port 8080) to the Public IP address associated with the Load balancer as the admin user.
+To manage the currently AD-Active VMR, you can open a CLI SSH connection (on port 2222) or connect SolAdmin (on port 8080) to the Public IP address (myLBPublicIPD) associated with the Load balancer (myLB) as the admin user.
 
 
 # Testing data access to the VMR
@@ -95,7 +95,7 @@ To test data traffic though the newly created VMR instance, visit the Solace dev
 # Troubleshouting VMR startup
 
 All startup logs are located here: /var/lib/waagent/custom-script/download/0/ and are readable by root only.
-Host and Container logs and diagnostics are collected and aggregated in a Azure Log Analytics workspace that can be viewed and analyzed from the Azure Portal under More services > Intelligence + Analytics > Log Analytics
+Host and Container logs and diagnostics are collected and aggregated in a Azure Log Analytics workspace that can be viewed and analyzed from the Azure Portal under More services > Intelligence + Analytics > Log Analytics.
 
 ## Contributing
 
@@ -103,7 +103,7 @@ Please read [CONTRIBUTING.md](CONTRIBUTING.md) for details on our code of conduc
 
 ## Authors
 
-See the list of [contributors](https://github.com/SolaceLabs/solace-azure-quickstart-template/graphs/contributors) who participated in this project.
+See the list of [contributors](../../graphs/contributors) who participated in this project.
 
 ## License
 

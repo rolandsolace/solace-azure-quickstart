@@ -47,7 +47,7 @@
     },
     "centosVersion": {
       "type": "string",
-      "defaultValue": "7.2",
+      "defaultValue": "7.4",
       "metadata": {
         "description": "The CentOS version for deploying the Docker containers. This will pick a fully patched image of this given CentOS version. Allowed values: 7.2, 7.3, 7.4"
       },
@@ -68,6 +68,20 @@
         "Standard_D2_v3",
         "Standard_F2s",
         "Standard_F2s_v2"
+      ]
+    },
+    "dataDiskSize": {
+      "type": "string",
+      "defaultValue": "0",
+      "metadata": {
+        "description": "The size of the data disk in GB. Allowed values: 0, 20, 40, 80, 160"
+      },
+      "allowedValues": [
+        "0",
+        "20",
+        "40",
+        "80",
+        "160"
       ]
     },
     "solaceVmrUri": {
@@ -100,8 +114,8 @@
     "sharedTemplatename": "shared-resources.json",
     "solaceInstallScriptName": "deploy_vmr.sh",
     "publicIPAddressName": "myPublicIPD",
-    "publicIPAddressType": "Dynamic",
     "publicIPAddressNameLB": "myLBPublicIPD",
+    "publicIPAddressType": "Dynamic",
     "vmStorageAccountVHDsName": "vhds",
     "vmStorageAccountContainersName": "containers",
     "vmName": "SolaceVMR",
@@ -113,9 +127,7 @@
     "virtualNetworkName": "MyVNETD",
     "vnetID": "[resourceId('Microsoft.Network/virtualNetworks',variables('virtualNetworkName'))]",
     "subnetRef": "[concat(variables('vnetID'),'/subnets/',variables('subnetName'))]",
-    "deploymentModelHighAvailability": {
-      "numberOfNodes": 3
-    },
+    "deploymentModelHighAvailability": { "numberOfNodes": 3 },
     "deploymentModelSingleNode": { "numberOfNodes": 1 },
     "numberOfInstances": "[variables(concat('deploymentModel', parameters('deploymentModel'))).numberOfNodes]",
     "lbName" : "myLB",
@@ -126,25 +138,10 @@
     "lbPoolID": "[concat(variables('lbID'),'/backendAddressPools/',variables('lbPoolName'))]",
     "lbProbeName": "vmr-ha-ad-health-check",
     "lbProbeID": "[concat(variables('lbID'),'/probes/',variables('lbProbeName'))]",
-    "syslogFacilities": [
-      "kern",
-      "user",
-      "daemon",
-      "auth",
-      "syslog",
-      "uucp",
-      "authpriv",
-      "ftp",
-      "cron",
-      "local0",
-      "local1",
-      "local2",
-      "local3",
-      "local4",
-      "local5",
-      "local6",
-      "local7"
-    ],
+    "workspaceTier": "Free",
+    "containersMarketplaceName": "Containers",
+    "syslogFacilities": [ "kern", "user", "daemon", "auth", "syslog", "uucp", "authpriv", "ftp", "cron", "local0", "local1", "local2", "local3", "local4", "local5", "local6", "local7" ],
+    "dataDiskVolume" : "/dev/sdc",
     "adminPasswordDir" : "/mnt/resource/secrets",
     "adminPasswordFile" : "[concat(variables('adminPasswordDir'),'/solOSpasswd')]"
   },
@@ -202,17 +199,25 @@
       "type": "Microsoft.Network/virtualNetworks",
       "name": "[variables('virtualNetworkName')]",
       "location": "[resourceGroup().location]",
+      "dependsOn": [
+        "[concat('Microsoft.Network/networkSecurityGroups/', parameters('securityGroupName'))]"
+      ],
       "properties": {
           "addressSpace": {
-          "addressPrefixes": [ "[variables('addressPrefix')]" ]
+            "addressPrefixes": [
+              "[variables('addressPrefix')]"
+            ]
           },
           "subnets": [
-              {
-                  "name": "[variables('subnetName')]",
-                  "properties": {
-                      "addressPrefix": "[variables('subnetPrefix')]"
-                  }
+            {
+              "name": "[variables('subnetName')]",
+              "properties": {
+                "addressPrefix": "[variables('subnetPrefix')]",
+                "networkSecurityGroup": {
+                  "id": "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('securityGroupName'))]"
+                }
               }
+            }
           ]
         } 
     },
@@ -238,7 +243,7 @@
               "privateIPAllocationMethod": "Static",
               "privateIPAddress": "[concat(variables('nodeAddressPrefix'), copyindex())]",
               "publicIPAddress": {
-                "id": "[resourceId('Microsoft.Network/publicIPAddresses',concat(variables('publicIPAddressName'), copyindex()))]"
+                "id": "[resourceId('Microsoft.Network/publicIPAddresses', concat(variables('publicIPAddressName'), copyindex()))]"
               },
               "subnet": {
                 "id": "[variables('subnetRef')]"
@@ -267,7 +272,7 @@
             "name": "[variables('frontEndIPConfigName')]",
             "properties": {
               "publicIPAddress": {
-                "id": "[resourceId('Microsoft.Network/publicIPAddresses',variables('publicIPAddressNameLB'))]"
+                "id": "[resourceId('Microsoft.Network/publicIPAddresses', variables('publicIPAddressNameLB'))]"
               }
             }
           }
@@ -473,7 +478,7 @@
       },
       "kind": "Storage",
       "location": "[resourceGroup().location]",
-      "properties": {}
+      "properties": { }
     },
     {
       "apiVersion": "2015-06-15",
@@ -501,7 +506,7 @@
       ],
       "properties": {
         "availabilitySet": {
-          "id": "[resourceId('Microsoft.Compute/availabilitySets',variables('availabilitySetName'))]"
+          "id": "[resourceId('Microsoft.Compute/availabilitySets', variables('availabilitySetName'))]"
         },
         "hardwareProfile": {
           "vmSize": "[parameters('vmSize')]"
@@ -519,7 +524,7 @@
             "version": "latest"
           },
           "osDisk": {
-            "name": "osdisk1",
+            "name": "[concat(variables('vmName'), copyindex(), '-osdisk1')]",
             "vhd": {
               "uri": "[concat('http://',parameters('storageAccountName'),'.blob.core.windows.net/',variables('vmStorageAccountVHDsName'),'/',variables('OSDiskName'),copyindex(),'.vhd')]"
             },
@@ -529,20 +534,10 @@
           "dataDisks": [
             {
               "name": "[concat(variables('vmName'), copyindex(), '-datadisk1')]",
-              "diskSizeGB": "50",
+              "diskSizeGB": "[parameters('dataDiskSize')]",
               "lun": 0,
               "vhd": {
-                "uri": "[concat('http://',parameters('storageAccountName'),'.blob.core.windows.net/',variables('vmStorageAccountVHDsName'),'/',variables('dataDiskName'),'_1_',copyindex(),'.vhd')]"
-              },
-              "caching": "ReadWrite",
-              "createOption": "Empty"
-            },
-            {
-              "name": "[concat(variables('vmName'), copyindex(), '-datadisk2')]",
-              "diskSizeGB": "70",
-              "lun": 1,
-              "vhd": {
-                "uri": "[concat('http://',parameters('storageAccountName'),'.blob.core.windows.net/',variables('vmStorageAccountVHDsName'),'/',variables('dataDiskName'),'_2_',copyindex(),'.vhd')]"
+                "uri": "[concat('http://',parameters('storageAccountName'),'.blob.core.windows.net/',variables('vmStorageAccountVHDsName'),'/',variables('dataDiskName'),copyindex(),'.vhd')]"
               },
               "caching": "ReadWrite",
               "createOption": "Empty"
@@ -585,7 +580,7 @@
       "location": "[resourceGroup().location]",
       "properties": {
         "sku": {
-          "name": "Free"
+          "name": "[variables('workspaceTier')]",
         }
       },
       "resources": [
@@ -639,7 +634,7 @@
     {
       "apiVersion": "2015-11-01-preview",
       "type": "Microsoft.OperationsManagement/solutions",
-      "name": "[concat('Containers', '(', parameters('workspaceName'), ')')]",
+      "name": "[concat(variables('containersMarketplaceName'), '(', parameters('workspaceName'), ')')]",
       "location": "[resourceGroup().location]",
       "dependsOn": [
         "[concat('Microsoft.OperationalInsights/workspaces/', parameters('workspaceName'))]"
@@ -648,9 +643,9 @@
         "workspaceResourceId": "[resourceId('Microsoft.OperationalInsights/workspaces', parameters('workspaceName'))]"
       },
       "plan": {
-        "name": "[concat('Containers', '(', parameters('workspaceName'), ')')]",
+        "name": "[concat(variables('containersMarketplaceName'), '(', parameters('workspaceName'), ')')]",
         "publisher": "Microsoft",
-        "product": "OMSGallery/Containers",
+        "product": "[concat('OMSGallery/', variables('containersMarketplaceName'))]",
         "promotionCode": ""
       }
     },
@@ -704,8 +699,8 @@
           ]
         },
         "protectedSettings": {
-          "commandToExecute": "[concat('mkdir -p -m 600 ', variables('adminPasswordDir'), '; echo ', parameters('adminPassword'), ' > ', variables('adminPasswordFile'), '; bash ', variables('solaceInstallScriptName'), ' -c ', copyindex(), ' -i ', variables('nodeAddressPrefix'), ' -n ', variables('numberOfInstances'), ' -p ', variables('adminPasswordFile'))]"
-        } 
+          "commandToExecute": "[concat('mkdir -p -m 600 ', variables('adminPasswordDir'), '; echo ', parameters('adminPassword'), ' > ', variables('adminPasswordFile'), '; bash ', variables('solaceInstallScriptName'), ' -c ', copyindex(), ' -i ', variables('nodeAddressPrefix'), ' -n ', variables('numberOfInstances'), ' -p ', variables('adminPasswordFile'), ' -s ', parameters('dataDiskSize'), ' -v ', variables('dataDiskVolume'))]"
+        }
       }
     }
   ]
