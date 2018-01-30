@@ -94,7 +94,6 @@
     "imagePublisher": "OpenLogic",
     "imageOffer": "Centos",
     "OSDiskName": "osdiskfordockersimple",
-    "dataDiskName": "datadiskfordockersimple",
     "nicName": "myVMNicD",
     "scriptUrl": "https://raw.githubusercontent.com/rolandsolace/solace-azure-quickstart/dev/",
     "sharedTemplatename": "shared-resources.json",
@@ -317,25 +316,6 @@
             }
           },
           {
-            "name": "semp-ssl",
-            "properties": {
-              "frontendIPConfiguration": {
-                "id": "[variables('frontEndIPConfigID')]"
-              },
-              "backendAddressPool": {
-                "id": "[variables('lbPoolID')]"
-              },
-              "protocol": "tcp",
-              "frontendPort": 943,
-              "backendPort": 943,
-              "idleTimeoutInMinutes": 5,
-              "enableFloatingIP": false,
-              "probe": {
-                "id": "[variables('lbProbeID')]"
-              }
-            }
-          },
-          {
             "name": "smf",
             "properties": {
               "frontendIPConfiguration": {
@@ -374,25 +354,6 @@
             }
           },
           {
-            "name": "smf-ssl",
-            "properties": {
-              "frontendIPConfiguration": {
-                "id": "[variables('frontEndIPConfigID')]"
-              },
-              "backendAddressPool": {
-                "id": "[variables('lbPoolID')]"
-              },
-              "protocol": "tcp",
-              "frontendPort": 55443,
-              "backendPort": 55443,
-              "idleTimeoutInMinutes": 5,
-              "enableFloatingIP": false,
-              "probe": {
-                "id": "[variables('lbProbeID')]"
-              }
-            }
-          },
-          {
             "name": "smf-web",
             "properties": {
               "frontendIPConfiguration": {
@@ -404,25 +365,6 @@
               "protocol": "tcp",
               "frontendPort": 80,
               "backendPort": 80,
-              "idleTimeoutInMinutes": 5,
-              "enableFloatingIP": false,
-              "probe": {
-                "id": "[variables('lbProbeID')]"
-              }
-            }
-          },
-          {
-            "name": "smf-web-ssl",
-            "properties": {
-              "frontendIPConfiguration": {
-                "id": "[variables('frontEndIPConfigID')]"
-              },
-              "backendAddressPool": {
-                "id": "[variables('lbPoolID')]"
-              },
-              "protocol": "tcp",
-              "frontendPort": 443,
-              "backendPort": 443,
               "idleTimeoutInMinutes": 5,
               "enableFloatingIP": false,
               "probe": {
@@ -450,25 +392,6 @@
             }
           },
           {
-            "name": "mqtt-ssl",
-            "properties": {
-              "frontendIPConfiguration": {
-                "id": "[variables('frontEndIPConfigID')]"
-              },
-              "backendAddressPool": {
-                "id": "[variables('lbPoolID')]"
-              },
-              "protocol": "tcp",
-              "frontendPort": 8883,
-              "backendPort": 8883,
-              "idleTimeoutInMinutes": 5,
-              "enableFloatingIP": false,
-              "probe": {
-                "id": "[variables('lbProbeID')]"
-              }
-            }
-          },
-          {
             "name": "mqtt-web",
             "properties": {
               "frontendIPConfiguration": {
@@ -480,25 +403,6 @@
               "protocol": "tcp",
               "frontendPort": 8000,
               "backendPort": 8000,
-              "idleTimeoutInMinutes": 5,
-              "enableFloatingIP": false,
-              "probe": {
-                "id": "[variables('lbProbeID')]"
-              }
-            }
-          },
-          {
-            "name": "mqtt-web-ssl",
-            "properties": {
-              "frontendIPConfiguration": {
-                "id": "[variables('frontEndIPConfigID')]"
-              },
-              "backendAddressPool": {
-                "id": "[variables('lbPoolID')]"
-              },
-              "protocol": "tcp",
-              "frontendPort": 8443,
-              "backendPort": 8443,
               "idleTimeoutInMinutes": 5,
               "enableFloatingIP": false,
               "probe": {
@@ -526,25 +430,6 @@
             }
           },
           {
-            "name": "amqp-ssl",
-            "properties": {
-              "frontendIPConfiguration": {
-                "id": "[variables('frontEndIPConfigID')]"
-              },
-              "backendAddressPool": {
-                "id": "[variables('lbPoolID')]"
-              },
-              "protocol": "tcp",
-              "frontendPort": 5671,
-              "backendPort": 5671,
-              "idleTimeoutInMinutes": 5,
-              "enableFloatingIP": false,
-              "probe": {
-                "id": "[variables('lbProbeID')]"
-              }
-            }
-          },
-          {
             "name": "rest",
             "properties": {
               "frontendIPConfiguration": {
@@ -556,25 +441,6 @@
               "protocol": "tcp",
               "frontendPort": 9000,
               "backendPort": 9000,
-              "idleTimeoutInMinutes": 5,
-              "enableFloatingIP": false,
-              "probe": {
-                "id": "[variables('lbProbeID')]"
-              }
-            }
-          },
-          {
-            "name": "rest-ssl",
-            "properties": {
-              "frontendIPConfiguration": {
-                "id": "[variables('frontEndIPConfigID')]"
-              },
-              "backendAddressPool": {
-                "id": "[variables('lbPoolID')]"
-              },
-              "protocol": "tcp",
-              "frontendPort": 9443,
-              "backendPort": 9443,
               "idleTimeoutInMinutes": 5,
               "enableFloatingIP": false,
               "probe": {
@@ -700,6 +566,67 @@
         }
       },
       "resources": [
+        {
+          "apiVersion": "2015-11-01-preview",
+          "type": "Microsoft.OperationalInsights/workspaces/datasources",
+          "name": "[concat(parameters('workspaceName'), '/performance')]",
+          "dependsOn": [
+            "[concat('Microsoft.OperationalInsights/workspaces/', parameters('omsWorkspaceName'))]"
+          ],
+          "kind": "LinuxPerformanceObject",
+          "properties": {
+            "performanceCounters": [
+              {
+                "counterName": "% Free Inodes"
+              },
+              {
+                "counterName": "% Free Space"
+              },
+              {
+                "counterName": "% Used Inodes"
+              },
+              {
+                "counterName": "% Used Space"
+              },
+              {
+                "counterName": "Disk Read Bytes/sec"
+              },
+              {
+                "counterName": "Disk Reads/sec"
+              },
+              {
+                "counterName": "Disk Transfers/sec"
+              },
+              {
+                "counterName": "Disk Write Bytes/sec"
+              },
+              {
+                "counterName": "Disk Writes/sec"
+              },
+              {
+                "counterName": "Free Megabytes"
+              },
+              {
+                "counterName": "Logical Disk Bytes/sec"
+              }
+            ],
+            "objectName": "Logical Disk",
+            "instanceName": "*",
+            "intervalSeconds": 10
+          }
+        },
+        {
+          "apiVersion": "2015-11-01-preview",
+          "type": "Microsoft.OperationalInsights/workspaces/datasources",
+          "name": "[concat(parameters('workspaceName'), '/performanceCollection')]",
+          "dependsOn": [
+            "[concat('Microsoft.OperationalInsights/workspaces/', parameters('omsWorkspaceName'))]"
+          ],
+          "kind": "LinuxPerformanceCollection",
+          "properties": {
+            "state": "Enabled"
+          }
+        },
         {
           "apiVersion": "2015-11-01-preview",
           "type": "Microsoft.OperationalInsights/workspaces/datasources",

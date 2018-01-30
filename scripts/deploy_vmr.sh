@@ -30,7 +30,7 @@ shift $((OPTIND-1))
 
 verbose=1
 echo "`date` current_index=$current_index , ip_prefix=$ip_prefix , number_of_instances=$number_of_instances , \
-      password_file=password_file , Leftovers: $@"
+      password_file=$password_file , Leftovers: $@"
 export password=`cat ${password_file}`
 
 #Install the logical volume manager and jq for json parsing
