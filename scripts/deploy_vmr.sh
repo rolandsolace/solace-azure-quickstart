@@ -14,7 +14,7 @@ is_primary="false"
 
 verbose=0
 
-while getopts "c:i:n:p:" opt; do
+while getopts "c:i:n:p:s:v:" opt; do
     case "$opt" in
     c)  current_index=$OPTARG
         ;;
