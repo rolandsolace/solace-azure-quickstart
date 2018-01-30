@@ -101,7 +101,8 @@
     "solaceInstallScriptName": "deploy_vmr.sh",
     "publicIPAddressName": "myPublicIPD",
     "publicIPAddressType": "Dynamic",
-    "publicIPAddressID": "[resourceId('Microsoft.Network/publicIPAddresses',variables('publicIPAddressName'))]",
+    "publicIPLBAddressName": "myPublicIPDLB",
+    "publicIPLBAddressID": "[resourceId('Microsoft.Network/publicIPAddresses',variables('publicIPLBAddressName'))]",
     "vmStorageAccountVHDsName": "vhds",
     "vmStorageAccountContainersName": "containers",
     "vmName": "SolaceVMR",
@@ -172,7 +173,7 @@
     {
       "apiVersion": "2015-06-15",
       "type": "Microsoft.Network/publicIPAddresses",
-      "name": "[concat(variables('publicIPAddressName'), 'LB')]",
+      "name": "[variables('publicIPLBAddressName')]",
       "location": "[resourceGroup().location]",
       "properties": {
         "publicIPAllocationMethod": "[variables('publicIPAddressType')]",
@@ -259,7 +260,7 @@
       "name": "[variables('lbName')]",
       "location": "[resourceGroup().location]",
       "dependsOn": [
-        "[concat('Microsoft.Network/publicIPAddresses/', variables('publicIPAddressName'))]"
+        "[concat('Microsoft.Network/publicIPAddresses/', variables('publicIPLBAddressName'))]"
       ],
       "properties": {
         "frontendIPConfigurations": [
@@ -267,7 +268,7 @@
             "name": "[variables('frontEndIPConfigName')]",
             "properties": {
               "publicIPAddress": {
-                "id": "[variables('publicIPAddressID')]"
+                "id": "[variables('publicIPLBAddressID')]"
               }
             }
           }
