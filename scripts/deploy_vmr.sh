@@ -181,10 +181,11 @@ docker volume create --name=jail
 docker volume create --name=var
 
 if [ $disk_size == "0" ]; then
+  docker volume create --name=diagnostics
   docker volume create --name=internalSpool
-  docker volume create --name=adbBackup
   docker volume create --name=softAdb
-  SPOOL_MOUNT="-v internalSpool:/usr/sw/internalSpool -v adbBackup:/usr/sw/adb -v softAdb:/usr/sw/internalSpool/softAdb"
+  docker volume create --name=adbBackup
+  SPOOL_MOUNT="-v diagnostics:/var/lib/solace/diags -v internalSpool:/usr/sw/internalSpool -v softAdb:/usr/sw/internalSpool/softAdb -v adbBackup:/usr/sw/adb"
 else
   echo "`date` Create primary partition on new disk"
   (
@@ -199,8 +200,12 @@ else
   UUID=`blkid -s UUID -o value ${disk_volume}1`
   echo "UUID=${UUID} /opt/vmr xfs defaults 0 0" >> /etc/fstab
   mkdir /opt/vmr
+  mkdir /opt/vmr/diagnostics
+  mkdir /opt/vmr/internalSpool
+  mkdir /opt/vmr/softAdb
+  mkdir /opt/vmr/adbBackup
   mount -a
-  SPOOL_MOUNT="-v /opt/vmr:/usr/sw/internalSpool -v /opt/vmr:/usr/sw/adb -v /opt/vmr:/usr/sw/internalSpool/softAdb"
+  SPOOL_MOUNT="-v /opt/vmr/diagnostics:/var/lib/solace/diags -v /opt/vmr/internalSpool:/usr/sw/internalSpool -v /opt/vmr/softAdb:/usr/sw/internalSpool/softAdb -v /opt/vmr/adbBackup:/usr/sw/adb"
 fi
 
 #Define a create script

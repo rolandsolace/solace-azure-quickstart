@@ -111,8 +111,10 @@
     "dataDiskName": "datadiskfordockersimple",
     "nicName": "myVMNicD",
     "scriptUrl": "https://raw.githubusercontent.com/rolandsolace/solace-azure-quickstart/dev/",
-    "sharedTemplatename": "shared-resources.json",
+    "solaceSecurityName": "SolaceSecurity.Template",
+    "sharedTemplateName": "shared-resources.json",
     "solaceInstallScriptName": "deploy_vmr.sh",
+    "sempQueryScriptName": "semp_query.sh",
     "publicIPAddressName": "myPublicIPD",
     "publicIPAddressNameLB": "myLBPublicIPD",
     "publicIPAddressType": "Dynamic",
@@ -149,11 +151,11 @@
     {
       "apiVersion": "2015-01-01",
       "type": "Microsoft.Resources/deployments",
-      "name": "SolaceSecurity.Template",
+      "name": "[variables('solaceSecurityName')]",
       "properties": {
         "mode": "Incremental",
         "templateLink": {
-          "uri": "[concat(variables('scriptUrl'), variables('sharedTemplatename'))]",
+          "uri": "[concat(variables('scriptUrl'), variables('sharedTemplateName'))]",
           "contentVersion": "1.0.0.0"
         },
         "parameters": {
@@ -199,6 +201,9 @@
       "type": "Microsoft.Network/virtualNetworks",
       "name": "[variables('virtualNetworkName')]",
       "location": "[resourceGroup().location]",
+      "dependsOn": [
+        "[concat('Microsoft.Resources/deployments/', variables('solaceSecurityName'))]"
+      ],
       "properties": {
           "addressSpace": {
             "addressPrefixes": [
@@ -692,7 +697,7 @@
           "fileUris": [
             "[parameters('solaceVmrUri')]",
             "[concat(variables('scriptUrl'), 'scripts/', variables('solaceInstallScriptName'))]",
-            "[concat(variables('scriptUrl'), 'scripts/semp_query.sh')]"
+            "[concat(variables('scriptUrl'), 'scripts/', variables('sempQueryScriptName'))]"
           ]
         },
         "protectedSettings": {
