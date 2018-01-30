@@ -193,7 +193,7 @@ docker create \
  --log-opt syslog-address=udp://127.0.0.1:25224 \
  -v jail:/usr/sw/jail \
  -v var:/usr/sw/var \
- -v /mnt/vmr/secrets:/run/secrets \
+ -v $(dirname ${password_file}):/run/secrets \
  -v internalSpool:/usr/sw/internalSpool \
  -v adbBackup:/usr/sw/adb \
  -v softAdb:/usr/sw/internalSpool/softAdb \

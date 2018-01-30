@@ -145,7 +145,7 @@
       "local6",
       "local7"
     ],
-    "adminPasswordDir" : "/mnt/vmr/secrets",
+    "adminPasswordDir" : "/mnt/resource/secrets",
     "adminPasswordFile" : "[concat(variables('adminPasswordDir'),'/solOSpasswd')]"
   },
   "resources": [
@@ -172,7 +172,7 @@
     {
       "apiVersion": "2015-06-15",
       "type": "Microsoft.Network/publicIPAddresses",
-      "name": "[variables('publicIPAddressName')]",
+      "name": "[concat(variables('publicIPAddressName'), 'LB')]",
       "location": "[resourceGroup().location]",
       "properties": {
         "publicIPAllocationMethod": "[variables('publicIPAddressType')]",
@@ -592,67 +592,6 @@
         {
           "apiVersion": "2015-11-01-preview",
           "type": "Microsoft.OperationalInsights/workspaces/datasources",
-          "name": "[concat(parameters('workspaceName'), '/performance')]",
-          "dependsOn": [
-            "[concat('Microsoft.OperationalInsights/workspaces/', parameters('omsWorkspaceName'))]"
-          ],
-          "kind": "LinuxPerformanceObject",
-          "properties": {
-            "performanceCounters": [
-              {
-                "counterName": "% Free Inodes"
-              },
-              {
-                "counterName": "% Free Space"
-              },
-              {
-                "counterName": "% Used Inodes"
-              },
-              {
-                "counterName": "% Used Space"
-              },
-              {
-                "counterName": "Disk Read Bytes/sec"
-              },
-              {
-                "counterName": "Disk Reads/sec"
-              },
-              {
-                "counterName": "Disk Transfers/sec"
-              },
-              {
-                "counterName": "Disk Write Bytes/sec"
-              },
-              {
-                "counterName": "Disk Writes/sec"
-              },
-              {
-                "counterName": "Free Megabytes"
-              },
-              {
-                "counterName": "Logical Disk Bytes/sec"
-              }
-            ],
-            "objectName": "Logical Disk",
-            "instanceName": "*",
-            "intervalSeconds": 10
-          }
-        },
-        {
-          "apiVersion": "2015-11-01-preview",
-          "type": "Microsoft.OperationalInsights/workspaces/datasources",
-          "name": "[concat(parameters('workspaceName'), '/performanceCollection')]",
-          "dependsOn": [
-            "[concat('Microsoft.OperationalInsights/workspaces/', parameters('omsWorkspaceName'))]"
-          ],
-          "kind": "LinuxPerformanceCollection",
-          "properties": {
-            "state": "Enabled"
-          }
-        },
-        {
-          "apiVersion": "2015-11-01-preview",
-          "type": "Microsoft.OperationalInsights/workspaces/datasources",
           "name": "[concat(parameters('workspaceName'), '/syslogCollection')]",
           "dependsOn": [
             "[concat('Microsoft.OperationalInsights/workspaces/', parameters('workspaceName'))]"
@@ -672,7 +611,7 @@
         "[concat('Microsoft.OperationalInsights/workspaces/', parameters('workspaceName'))]"
       ],
       "copy": {
-        "name": "FacilityLoop",
+        "name": "SyslogFacilityLoop",
         "count": "[length(variables('syslogFacilities'))]"
       },
       "kind": "LinuxSyslog",
@@ -718,10 +657,10 @@
     {
       "apiVersion": "2015-06-15",
       "type": "Microsoft.Compute/virtualMachines/extensions",
-      "name": "[concat(variables('vmName'), copyindex(), '/OMSExtension')]",
+      "name": "[concat(variables('vmName'), copyindex(), '/OmsAgentExtension')]",
       "location": "[resourceGroup().location]",
       "copy": {
-        "name": "OMSLoop",
+        "name": "OmsAgentLoop",
         "count": "[variables('numberOfInstances')]"
       },
       "dependsOn": [
