@@ -15,7 +15,7 @@
         "metadata": {
           "description": "Subnet for VMRs."
         }
-      } 
+      }
     },
     "variables": {
     },
