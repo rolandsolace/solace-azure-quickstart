@@ -546,7 +546,7 @@
           },
           "dataDisks": [
             {
-              "condition": "[and(greater(parameters('dataDiskSize'), '0'), (not(copyindex(), '2')))]",
+              "condition": "[and(greater(parameters('dataDiskSize'), '0'), not(copyindex(), '2'))]",
               "name": "[concat(variables('vmName'), copyindex(), '-datadisk1')]",
               "diskSizeGB": "[parameters('dataDiskSize')]",
               "lun": 0,
