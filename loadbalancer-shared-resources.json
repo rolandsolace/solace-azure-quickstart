@@ -29,7 +29,7 @@
       "frontEndIPConfigID": "[concat(variables('lbID'),'/frontendIPConfigurations/',variables('frontEndIPConfigName'))]",
       "lbPoolName": "vmr-ha-group",
       "lbProbeName": "vmr-ha-ad-health-check",
-      "lbProbeID": "[concat(variables('lbID'),'/probes/',variables('lbProbeName'))]",
+      "lbProbeID": "[concat(variables('lbID'),'/probes/',variables('lbProbeName'))]"
     },
     "resources": [
       {
