@@ -33,7 +33,7 @@
         "type": "string",
         "defaultValue": "vmr-ha-group",
         "metadata": {
-          "description": "Load Balancer Pool Name."
+          "description": "Load Balancer Backend Address Pool Name."
         }
       }
     },
@@ -41,9 +41,9 @@
       "lbID": "[resourceId('Microsoft.Network/loadBalancers',parameters('lbName'))]",
       "frontEndIPConfigName": "LoadBalancerFrontEnd",
       "frontEndIPConfigID": "[concat(variables('lbID'),'/frontendIPConfigurations/',variables('frontEndIPConfigName'))]",
+      "lbPoolID": "[concat(variables('lbID'),'/backendAddressPools/',parameters('lbPoolName'))]",
       "lbProbeName": "vmr-ha-ad-health-check",
-      "lbProbeID": "[concat(variables('lbID'),'/probes/',variables('lbProbeName'))]",
-      "lbPoolID": "[concat(variables('lbID'),'/backendAddressPools/',parameters('lbPoolName'))]"
+      "lbProbeID": "[concat(variables('lbID'),'/probes/',variables('lbProbeName'))]"
     },
     "resources": [
       {
