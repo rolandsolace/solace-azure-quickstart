@@ -12,7 +12,14 @@
         "type": "string",
         "defaultValue": "myLBPublicIPD",
         "metadata": {
-          "description": "Load Balancer Public IP Address."
+          "description": "Load Balancer Public IP Address Name."
+        }
+      },
+      "publicIPAddressType": {
+        "type": "string",
+        "defaultValue": "Dynamic",
+        "metadata": {
+          "description": "Load Balancer Public IP Address Type."
         }
       },
       "lbName": {
@@ -21,13 +28,19 @@
         "metadata": {
           "description": "Load Balancer Name."
         }
+      },
+      "lbPoolName": {
+        "type": "string",
+        "defaultValue": "vmr-ha-group",
+        "metadata": {
+          "description": "Load Balancer Pool Name."
+        }
       }
     },
     "variables": {
       "lbID": "[resourceId('Microsoft.Network/loadBalancers',parameters('lbName'))]",
       "frontEndIPConfigName": "LoadBalancerFrontEnd",
       "frontEndIPConfigID": "[concat(variables('lbID'),'/frontendIPConfigurations/',variables('frontEndIPConfigName'))]",
-      "lbPoolName": "vmr-ha-group",
       "lbProbeName": "vmr-ha-ad-health-check",
       "lbProbeID": "[concat(variables('lbID'),'/probes/',variables('lbProbeName'))]"
     },
@@ -38,7 +51,7 @@
         "name": "[parameters('publicIPAddressNameLB')]",
         "location": "[resourceGroup().location]",
         "properties": {
-          "publicIPAllocationMethod": "[variables('publicIPAddressType')]",
+          "publicIPAllocationMethod": "[parameters('publicIPAddressType')]",
           "dnsSettings": {
             "domainNameLabel": "[parameters('dnsLabelForLbIp')]"
           }
@@ -65,7 +78,7 @@
           ],
           "backendAddressPools": [
             {
-              "name": "[variables('lbPoolName')]"
+              "name": "[parameters('lbPoolName')]"
             }
           ],
           "loadBalancingRules": [
