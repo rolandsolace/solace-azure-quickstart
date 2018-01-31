@@ -546,7 +546,7 @@
           },
           "dataDisks": [
             {
-              "condition": "[and(greater(parameters('dataDiskSize'), '0'), (not(copyindex(), '2')))]",
+              "condition": "[and(greater(parameters('dataDiskSize'), '0'), (not(copyindex(), '2')))]"
               "name": "[concat(variables('vmName'), copyindex(), '-datadisk1')]",
               "diskSizeGB": "[parameters('dataDiskSize')]",
               "lun": 0,
@@ -594,7 +594,7 @@
       "location": "[resourceGroup().location]",
       "properties": {
         "sku": {
-          "name": "[variables('workspaceTier')]",
+          "name": "[variables('workspaceTier')]"
         }
       },
       "resources": [
@@ -713,7 +713,7 @@
           ]
         },
         "protectedSettings": {
-          "commandToExecute": "[concat('mkdir -p -m 600 ', variables('adminPasswordDir'), '; echo ', parameters('adminPassword'), ' > ', variables('adminPasswordFile'), '; bash ', variables('solaceInstallScriptName'), ' -c ', copyindex(), ' -i ', variables('nodeAddressPrefix'), ' -n ', variables('numberOfInstances'), ' -p ', variables('adminPasswordFile'), ' -u ', parameters('solaceVmrUri'))]"
+          "commandToExecute": "[concat('mkdir -p -m 600 ', variables('adminPasswordDir'), '; echo ', parameters('adminPassword'), ' > ', variables('adminPasswordFile'), '; bash ', variables('solaceInstallScriptName'), ' -c ', copyindex(), ' -i ', variables('nodeAddressPrefix'), ' -n ', variables('numberOfInstances'), ' -p ', variables('adminPasswordFile'), ' -s ', if(equals(copyIndex(), 2), 0, parameters('dataDiskSize')), ' -v ', if(equals(copyIndex(), 2), '', parameters('dataDiskVolume')), ' -u ', parameters('solaceVmrUri'))]"
         }
       }
     }
