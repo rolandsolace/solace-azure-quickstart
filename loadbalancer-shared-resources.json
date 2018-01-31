@@ -42,7 +42,8 @@
       "frontEndIPConfigName": "LoadBalancerFrontEnd",
       "frontEndIPConfigID": "[concat(variables('lbID'),'/frontendIPConfigurations/',variables('frontEndIPConfigName'))]",
       "lbProbeName": "vmr-ha-ad-health-check",
-      "lbProbeID": "[concat(variables('lbID'),'/probes/',variables('lbProbeName'))]"
+      "lbProbeID": "[concat(variables('lbID'),'/probes/',variables('lbProbeName'))]",
+      "lbPoolID": "[concat(variables('lbID'),'/backendAddressPools/',parameters('lbPoolName'))]"
     },
     "resources": [
       {
