@@ -61,7 +61,7 @@ if [[ ${REAL_LINK} == "" ]]; then
     # an already-existing load (plus its md5 file) hosted somewhere else (e.g. in an s3 bucket)
     wget -O /tmp/solos.info -nv  ${solace_url}.md5
     IFS=' ' read -ra SOLOSOTHER_INFO <<< `cat /tmp/solos.info`
-    MD5_OTHER_SUM=${SOLOSOTHER_INFO[0]}
+    MD5_SUM_OTHER=${SOLOSOTHER_INFO[0]}
     SolOS_OTHER_LOAD=${SOLOSOTHER_INFO[1]}
     echo "`date` INFO: Reference md5sum is: ${MD5_SUM_OTHER}"
 else
