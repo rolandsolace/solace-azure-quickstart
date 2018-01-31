@@ -522,7 +522,7 @@
           "id": "[resourceId('Microsoft.Compute/availabilitySets', variables('availabilitySetName'))]"
         },
         "hardwareProfile": {
-          "vmSize": "[if(equals(copyIndex(), 2), parameters('monitorVmSize'), parameters('messageRoutingVmSize'))]",
+          "vmSize": "[if(equals(copyIndex(), 2), parameters('monitorVmSize'), parameters('messageRoutingVmSize'))]"
         },
         "osProfile": {
           "computerName": "[concat(variables('vmName'), copyindex())]",
@@ -546,7 +546,7 @@
           },
           "dataDisks": [
             {
-              "condition": "[and(greater(parameters('dataDiskSize'), '0'), (not(copyindex(), '2')))]"
+              "condition": "[and(greater(parameters('dataDiskSize'), '0'), (not(copyindex(), '2')))]",
               "name": "[concat(variables('vmName'), copyindex(), '-datadisk1')]",
               "diskSizeGB": "[parameters('dataDiskSize')]",
               "lun": 0,
