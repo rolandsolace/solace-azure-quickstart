@@ -11,13 +11,13 @@
     "adminUsername": {
       "type": "string",
       "metadata": {
-        "description": "Username for the Virtual Machine(s)."
+        "description": "Username for the Virtual Machine(s). Do not use special characters."
       }
     },
     "adminPassword": {
       "type": "securestring",
       "metadata": {
-        "description": "Password for the Virtual Machine(s) and for the admin CLI user."
+        "description": "Password for the Virtual Machine(s) and for the 'admin' SolOS CLI user."
       }
     },
     "securityGroupName": {
@@ -57,11 +57,22 @@
         "7.4"
       ]
     },
-    "vmSize": {
+    "messageRoutingVmSize": {
       "type": "string",
       "defaultValue": "Standard_D2_v2",
       "metadata": {
-        "description": "The size of the VM. Requires at lest 2 cores and 4GB of memory. Allowed values: DS2_V2, DS2_V3, F2S, F2S_V2"
+        "description": "The size of the Solace Message Routing Node VM. Requires at least 2 cores and 4GB of memory. Allowed values: DS2_V2, DS2_V3, F2S, F2S_V2"
+      },
+      "allowedValues": [
+        "Standard_D2_v2",
+        "Standard_D2_v3"
+      ]
+    },
+    "monitorVmSize": {
+      "type": "string",
+      "defaultValue": "Standard_D2_v2",
+      "metadata": {
+        "description": "The size of the Solace Monitor Node VM. Requires at least 2 cores and 4GB of memory. Allowed values: DS2_V2, DS2_V3, F2S, F2S_V2"
       },
       "allowedValues": [
         "Standard_D2_v2",
@@ -74,7 +85,7 @@
       "type": "string",
       "defaultValue": "0",
       "metadata": {
-        "description": "The size of the data disk in GB for diagnostics and message spooling. Allowed values: 0, 20, 40, 80, 160"
+        "description": "The size of the data disk in GB for diagnostics and message spooling on the Solace Message Routing Nodes. Allowed values: 0, 20, 40, 80, 160"
       },
       "allowedValues": [
         "0",
@@ -93,7 +104,7 @@
     "deploymentModel": {
       "type": "string",
       "metadata": {
-          "description": "Deploy three node ha cluster or single node"
+          "description": "Deploy three node HA cluster or single node"
       },
       "allowedValues": [
         "HighAvailability",
@@ -511,7 +522,7 @@
           "id": "[resourceId('Microsoft.Compute/availabilitySets', variables('availabilitySetName'))]"
         },
         "hardwareProfile": {
-          "vmSize": "[parameters('vmSize')]"
+          "vmSize": "[if(equals(copyIndex(), 2), parameters('monitorVmSize'), parameters('messageRoutingVmSize'))]",
         },
         "osProfile": {
           "computerName": "[concat(variables('vmName'), copyindex())]",
@@ -535,6 +546,7 @@
           },
           "dataDisks": [
             {
+              "condition": "[and(greater(parameters('dataDiskSize'), '0'), (not(copyindex(), '2')))]",
               "name": "[concat(variables('vmName'), copyindex(), '-datadisk1')]",
               "diskSizeGB": "[parameters('dataDiskSize')]",
               "lun": 0,
@@ -701,7 +713,7 @@
           ]
         },
         "protectedSettings": {
-          "commandToExecute": "[concat('mkdir -p -m 600 ', variables('adminPasswordDir'), '; echo ', parameters('adminPassword'), ' > ', variables('adminPasswordFile'), '; bash ', variables('solaceInstallScriptName'), ' -c ', copyindex(), ' -i ', variables('nodeAddressPrefix'), ' -n ', variables('numberOfInstances'), ' -p ', variables('adminPasswordFile'), ' -s ', parameters('dataDiskSize'), ' -v ', variables('dataDiskVolume'))]"
+          "commandToExecute": "[concat('mkdir -p -m 600 ', variables('adminPasswordDir'), '; echo ', parameters('adminPassword'), ' > ', variables('adminPasswordFile'), '; bash ', variables('solaceInstallScriptName'), ' -c ', copyindex(), ' -i ', variables('nodeAddressPrefix'), ' -n ', variables('numberOfInstances'), ' -p ', variables('adminPasswordFile'), ' -s ', [if(equals(copyIndex(), 2), 0, parameters('dataDiskSize'))], ' -v ', [if(equals(copyIndex(), 2), "", parameters('dataDiskVolume'))])]"
         }
       }
     }
