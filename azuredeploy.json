@@ -530,8 +530,8 @@
         "settings": {
           "fileUris": [
             "[parameters('solaceVmrUri')]",
-            "[uri(deployment().properties.templateLink.uri, 'scripts/', variables('solaceInstallScriptName'))]",
-            "[uri(deployment().properties.templateLink.uri, 'scripts/', variables('solaceInstallScriptName'))]"
+            "[uri(deployment().properties.templateLink.uri, concat('scripts/', variables('solaceInstallScriptName')))]",
+            "[uri(deployment().properties.templateLink.uri, concat('scripts/', variables('solaceInstallScriptName')))]"
           ]
         },
         "protectedSettings": {
