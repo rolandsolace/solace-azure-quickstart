@@ -61,7 +61,7 @@
       "type": "string",
       "defaultValue": "Standard_D2_v2",
       "metadata": {
-        "description": "The size of the Solace Message Routing Node VM. Requires at least 2 cores and 4GB of memory. Allowed values: D2_v2, DS2_v3, D2_v3, D2s_v3"
+        "description": "The size of the Solace Message Routing Node VM. Requires at least 2 cores and 4GB of memory. Allowed values: D2_v2, DS2_v2, D2_v3, D2s_v3"
       },
       "allowedValues": [
         "Standard_D2_v2",
@@ -74,11 +74,11 @@
       "type": "string",
       "defaultValue": "Standard_D2_v2",
       "metadata": {
-        "description": "The size of the Solace Monitor Node VM. Requires at least 2 cores and 4GB of memory. Allowed values: D2_v2, DS2_v3, D2_v3, D2s_v3"
+        "description": "The size of the Solace Monitor Node VM. Requires at least 2 cores and 4GB of memory. Allowed values: D2_v2, DS2_v2, D2_v3, D2s_v3"
       },
       "allowedValues": [
         "Standard_D2_v2",
-        "Standard_DS2_v3",
+        "Standard_DS2_v2",
         "Standard_D2_v3",
         "Standard_D2s_v3"
       ]
@@ -194,7 +194,7 @@
       "properties": {
         "mode": "Incremental",
         "templateLink": {
-          "uri": "[concat(variables('scriptUrl'), variables('securitySharedTemplateName'))]",
+          "uri": "[uri(deployment().properties.templateLink.uri, variables('securitySharedTemplateName'))]",
           "contentVersion": "1.0.0.0"
         },
         "parameters": {
@@ -214,7 +214,7 @@
       "properties": {
         "mode": "Incremental",
         "templateLink": {
-          "uri": "[concat(variables('scriptUrl'), variables('loadBalancerSharedTemplateName'))]",
+          "uri": "[uri(deployment().properties.templateLink.uri, variables('loadBalancerSharedTemplateName'))]",
           "contentVersion": "1.0.0.0"
         },
         "parameters": {
@@ -530,8 +530,8 @@
         "settings": {
           "fileUris": [
             "[parameters('solaceVmrUri')]",
-            "[concat(variables('scriptUrl'), 'scripts/', variables('solaceInstallScriptName'))]",
-            "[concat(variables('scriptUrl'), 'scripts/', variables('sempQueryScriptName'))]"
+            "[uri(deployment().properties.templateLink.uri, 'scripts/', variables('solaceInstallScriptName'))]",
+            "[uri(deployment().properties.templateLink.uri, 'scripts/', variables('solaceInstallScriptName'))]"
           ]
         },
         "protectedSettings": {
