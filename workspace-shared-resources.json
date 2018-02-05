@@ -7,6 +7,24 @@
         "metadata": {
           "description": "Unique OMS Workspace Name for Log Analytics."
         }
+      },
+      "workspaceRegion": {
+        "type": "string",
+        "defaultValue": "East US",
+        "allowedValues": [
+          "East US",
+          "West Europe",
+          "Southeast Asia",
+          "Australia Southeast",
+          "West Central US",
+          "Japan East",
+          "UK South",
+          "Central India",
+          "Canada Central"
+        ],
+        "metadata": {
+          "description": "OMS Workspace Region for Log Analytics."
+        }
       }
     },
     "variables": {
@@ -19,7 +37,7 @@
         "apiVersion": "2015-03-20",
         "type": "Microsoft.OperationalInsights/workspaces",
         "name": "[parameters('workspaceName')]",
-        "location": "[resourceGroup().location]",
+        "location": "[parameters('workspaceRegion')]",
         "properties": {
           "sku": {
             "name": "[variables('workspaceTier')]"
@@ -77,7 +95,7 @@
         "apiVersion": "2015-11-01-preview",
         "type": "Microsoft.OperationsManagement/solutions",
         "name": "[concat(variables('containersMarketplaceName'), '(', parameters('workspaceName'), ')')]",
-        "location": "[resourceGroup().location]",
+        "location": "[parameters('workspaceRegion')]",
         "dependsOn": [
           "[concat('Microsoft.OperationalInsights/workspaces/', parameters('workspaceName'))]"
         ],

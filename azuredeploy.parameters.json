@@ -6,10 +6,10 @@
       "value": "GEN-UNIQUE"
     },
     "adminUsername": {
-      "value": "ubuntu"
+      "value": "solace"
     },
     "adminPassword": {
-      "value": "P4$$w0rd"
+      "value": "GEN-PASSWORD"
     },
     "workspaceName": {
       "value": "GEN-UNIQUE"
@@ -19,6 +19,12 @@
     },
     "dnsLabelForVmIp": {
       "value": "GEN-UNIQUE"
+    },
+    "solaceVmrUri": {
+      "value": "http://em.solace.com/DCx500W0IBC00o01dY0V0i0"
+    },
+    "deploymentModel": {
+      "value": "SingleNode"
     }
   }
 }

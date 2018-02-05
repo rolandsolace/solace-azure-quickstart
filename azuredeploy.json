@@ -34,6 +34,24 @@
         "description": "Unique OMS Workspace Name for Log Analytics. Note that not all regions support workspaces. Leaving this field empty means do not create a workspace."
       }
     },
+    "workspaceRegion": {
+      "type": "string",
+      "defaultValue": "East US",
+      "allowedValues": [
+        "East US",
+        "West Europe",
+        "Southeast Asia",
+        "Australia Southeast",
+        "West Central US",
+        "Japan East",
+        "UK South",
+        "Central India",
+        "Canada Central"
+      ],
+      "metadata": {
+        "description": "OMS Workspace Region for Log Analytics."
+      }
+    },
     "dnsLabelForLbIp": {
       "type": "string",
       "metadata": {
@@ -312,6 +330,9 @@
         "[concat('Microsoft.Resources/deployments/', variables('solaceLoadBalancerName'))]"
       ],
       "properties": {
+        "networkSecurityGroup": {
+          "id": "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('securityGroupName'))]"
+        },
         "ipConfigurations": [
           {
             "name": "ipconfig1",
