@@ -32,6 +32,16 @@
       "containersMarketplaceName": "Containers",
       "syslogFacilities": [ "kern", "user", "daemon", "auth", "syslog", "uucp", "authpriv", "ftp", "cron", "local0", "local1", "local2", "local3", "local4", "local5", "local6", "local7" ],
     },
+    "outputs": {
+      "workspaceId": {
+        "type": "string",
+        "value": "[reference(resourceId('Microsoft.OperationalInsights/workspaces/', parameters('workspaceName')), '2015-03-20').customerId]"
+      },
+      "workspaceKey": {
+        "type": "string",
+        "value": "[listKeys(resourceId('Microsoft.OperationalInsights/workspaces/', parameters('workspaceName')), '2015-03-20').primarySharedKey]"
+      }
+    },
     "resources": [
       {
         "apiVersion": "2015-03-20",

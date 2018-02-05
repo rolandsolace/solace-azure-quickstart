@@ -257,7 +257,6 @@
       "apiVersion": "2015-01-01",
       "type": "Microsoft.Resources/deployments",
       "name": "[variables('solaceWorkspaceName')]",
-      "condition": "[not(empty(parameters('workspaceName')))]",
       "properties": {
         "mode": "Incremental",
         "templateLink": {
@@ -454,25 +453,24 @@
       "apiVersion": "2015-06-15",
       "type": "Microsoft.Compute/virtualMachines/extensions",
       "name": "[concat(variables('vmName'), copyindex(), '/OmsAgentExtension')]",
-      "condition": "[not(empty(parameters('workspaceName')))]",
       "location": "[resourceGroup().location]",
       "copy": {
         "name": "OmsAgentLoop",
         "count": "[variables('numberOfInstances')]"
       },
       "dependsOn": [
-        "[concat('Microsoft.Compute/virtualMachines/', variables('vmName'), copyindex(), '/extensions/DockerExtension')]",
-        "[concat('Microsoft.Resources/deployments/', variables('solaceWorkspaceName'))]"
+        "[concat('Microsoft.Resources/deployments/', variables('solaceWorkspaceName'))]",
+        "[concat('Microsoft.Compute/virtualMachines/', variables('vmName'), copyindex(), '/extensions/DockerExtension')]"
       ],
       "properties": {
         "publisher": "Microsoft.EnterpriseCloud.Monitoring",
         "type": "OmsAgentForLinux",
         "typeHandlerVersion": "1.4",
         "settings": {
-          "workspaceId": "[reference(resourceId('Microsoft.OperationalInsights/workspaces/', parameters('workspaceName')), '2015-03-20').customerId]"
+          "workspaceId": "[reference(variables('solaceWorkspaceName')).outputs.workspaceId.value]"
         },
         "protectedSettings": {
-          "workspaceKey": "[listKeys(resourceId('Microsoft.OperationalInsights/workspaces/', parameters('workspaceName')), '2015-03-20').primarySharedKey]"
+          "workspaceKey": "[reference(variables('solaceWorkspaceName')).outputs.workspaceKey.value]"
         }
       }
     },
