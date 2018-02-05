@@ -332,9 +332,6 @@
         "[concat('Microsoft.Resources/deployments/', variables('solaceLoadBalancerName'))]"
       ],
       "properties": {
-        "networkSecurityGroup": {
-          "id": "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('securityGroupName'))]"
-        },
         "ipConfigurations": [
           {
             "name": "ipconfig1",
