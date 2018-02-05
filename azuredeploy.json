@@ -29,9 +29,8 @@
     },
     "workspaceName": {
       "type": "string",
-      "defaultValue": "",
       "metadata": {
-        "description": "Unique OMS Workspace Name for Log Analytics. Note that not all regions support workspaces. Leaving this field empty means do not create a workspace."
+        "description": "Unique OMS Workspace Name for Log Analytics."
       }
     },
     "workspaceRegion": {
@@ -268,6 +267,9 @@
         "parameters": {
           "workspaceName": {
             "value": "[parameters('workspaceName')]"
+          },
+          "workspaceRegion": {
+            "value": "[parameters('workspaceRegion')]"
           }
         }
       }
@@ -470,10 +472,10 @@
         "type": "OmsAgentForLinux",
         "typeHandlerVersion": "1.4",
         "settings": {
-          "workspaceId": "if(empty(parameters('workspaceName')), '', [reference(resourceId('Microsoft.OperationalInsights/workspaces/', parameters('workspaceName')), '2015-03-20').customerId])"
+          "workspaceId": "[reference(resourceId('Microsoft.OperationalInsights/workspaces/', parameters('workspaceName')), '2015-03-20').customerId]"
         },
         "protectedSettings": {
-          "workspaceKey": "if(empty(parameters('workspaceName')), '', [listKeys(resourceId('Microsoft.OperationalInsights/workspaces/', parameters('workspaceName')), '2015-03-20').primarySharedKey])"
+          "workspaceKey": "[listKeys(resourceId('Microsoft.OperationalInsights/workspaces/', parameters('workspaceName')), '2015-03-20').primarySharedKey]"
         }
       }
     },
