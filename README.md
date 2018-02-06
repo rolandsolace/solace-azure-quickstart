@@ -51,7 +51,7 @@ The fields that you need to fill out are:
 | Admin Username             | Username for the virtual Machine(s). Do not use special characters. |
 | Admin Password             | Password for the virtual Machine(s) and for the 'admin' SolOS CLI user. |
 | Security Group Name        | New or existing security group, where VMR default ports will be made publicly available. |
-| Workspace Name             | New or existing OMS Log Analytics workspace, where logs and diagnostics are monitored. Note that not all regions support workspaces. Leaving this field empty means do not create a workspace. |
+| Workspace Name             | New or existing OMS Log Analytics workspace, where logs and diagnostics are monitored. |
 | Workspace Region           | Select region to deploy OMS Log Analytics workspace. |
 | DNS Label for LB IP        | Used for the public DNS name of the Load Balancer. |
 | DNS Label for VM IP        | Used for the public DNS name of each Virtual Machine(s). |
