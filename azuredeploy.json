@@ -36,6 +36,9 @@
     "workspaceRegion": {
       "type": "string",
       "defaultValue": "East US",
+      "metadata": {
+        "description": "OMS Workspace Region for Log Analytics."
+      },
       "allowedValues": [
         "East US",
         "West Europe",
@@ -46,10 +49,7 @@
         "UK South",
         "Central India",
         "Canada Central"
-      ],
-      "metadata": {
-        "description": "OMS Workspace Region for Log Analytics."
-      }
+      ]
     },
     "dnsLabelForLbIp": {
       "type": "string",
@@ -337,9 +337,6 @@
             "properties": {
               "privateIPAllocationMethod": "Static",
               "privateIPAddress": "[concat(variables('nodeAddressPrefix'), copyindex())]",
-              "dnsSettings": {
-                "internalDnsNameLabel": "[concat(parameters('dnsLabelForVmIp'), 'internal', copyindex())]"
-              },
               "publicIPAddress": {
                 "id": "[resourceId('Microsoft.Network/publicIPAddresses', concat(variables('publicIPAddressName'), copyindex()))]"
               },
@@ -459,8 +456,8 @@
         "count": "[variables('numberOfInstances')]"
       },
       "dependsOn": [
-        "[concat('Microsoft.Resources/deployments/', variables('solaceWorkspaceName'))]",
-        "[concat('Microsoft.Compute/virtualMachines/', variables('vmName'), copyindex(), '/extensions/DockerExtension')]"
+        "[concat('Microsoft.Compute/virtualMachines/', variables('vmName'), copyindex(), '/extensions/DockerExtension')]",
+        "[concat('Microsoft.Resources/deployments/', variables('solaceWorkspaceName'))]"
       ],
       "properties": {
         "publisher": "Microsoft.EnterpriseCloud.Monitoring",

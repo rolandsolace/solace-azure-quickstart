@@ -11,6 +11,9 @@
       "workspaceRegion": {
         "type": "string",
         "defaultValue": "East US",
+        "metadata": {
+          "description": "OMS Workspace Region for Log Analytics."
+        },
         "allowedValues": [
           "East US",
           "West Europe",
@@ -21,10 +24,7 @@
           "UK South",
           "Central India",
           "Canada Central"
-        ],
-        "metadata": {
-          "description": "OMS Workspace Region for Log Analytics."
-        }
+        ]
       }
     },
     "variables": {
