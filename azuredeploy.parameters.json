@@ -20,9 +20,6 @@
     "dnsLabelForVmIp": {
       "value": "GEN-UNIQUE"
     },
-    "solaceVmrUri": {
-      "value": "http://em.solace.com/DCx500W0IBC00o01dY0V0i0"
-    },
     "deploymentModel": {
       "value": "SingleNode"
     }
