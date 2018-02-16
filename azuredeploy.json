@@ -201,9 +201,7 @@
       "2": [ ]
     },
     "adminPasswordDir" : "/mnt/resource/secrets",
-    "adminPasswordFile" : "[concat(variables('adminPasswordDir'),'/solOSpasswd')]",
-    "workspaceId" : "[if(empty(parameters('workspaceName')), '', [reference(concat('Microsoft.Resources/deployments/', variables('solaceWorkspaceName')), '2016-03-30').outputs.workspaceId.value])]",
-    "workspaceKey" : "[if(empty(parameters('workspaceName')), '', [reference(concat('Microsoft.Resources/deployments/', variables('solaceWorkspaceName')), '2016-03-30').outputs.workspaceKey.value])]"
+    "adminPasswordFile" : "[concat(variables('adminPasswordDir'),'/solOSpasswd')]"
   },
   "resources": [
     {
@@ -471,10 +469,10 @@
         "type": "OmsAgentForLinux",
         "typeHandlerVersion": "1.0",
         "settings": {
-          "workspaceId": "[variables('workspaceId')]"
+          "workspaceId": "[if(empty(parameters('workspaceName')), '', [reference(concat('Microsoft.Resources/deployments/', variables('solaceWorkspaceName')), '2015-03-20').outputs.workspaceId.value])]"
         },
         "protectedSettings": {
-          "workspaceKey": "[variables('workspaceKey')]"
+          "workspaceKey": "[if(empty(parameters('workspaceName')), '', [reference(concat('Microsoft.Resources/deployments/', variables('solaceWorkspaceName')), '2015-03-20').outputs.workspaceKey.value])]"
         }
       }
     },
