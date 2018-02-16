@@ -237,22 +237,34 @@ LOG_OPT=""
 logging_config=""
 if [ -f ${SYSLOG_CONF} ]; then
   echo "`date` INFO: ${SYSLOG_CONF} exists"
-  SYSLOG_PORT=$(sed -n 's/.*\@127.0.0.1:\(.*\).*/\1/p' $SYSLOG_CONF  | head -1)
-  if [[ ${SYSLOG_PORT} != "" ]]; then
-    echo "`date` INFO: Configuring logging on syslog port ${SYSLOG_PORT}"
-    LOG_OPT="--log-driver syslog --log-opt syslog-format=rfc3164 --log-opt syslog-address=udp://127.0.0.1:$SYSLOG_PORT"
-    logging_config="\
-      --env logging_debug_output=all \
-      --env logging_debug_format=graylog \
-      --env logging_command_output=all \
-      --env logging_command_format=graylog \
-      --env logging_system_output=all \
-      --env logging_system_format=graylog \
-      --env logging_event_output=all \
-      --env logging_event_format=graylog \
-      --env logging_kernel_output=all \
-      --env logging_kernel_format=graylog"
-  fi
+  LOOP_COUNT=0
+  while [ $LOOP_COUNT -lt 100 ]; do
+    SYSLOG_PORT=$(sed -n 's/.*\@127.0.0.1:\(.*\).*/\1/p' $SYSLOG_CONF  | head -1)
+    if [[ ${SYSLOG_PORT} != "" ]]; then
+      echo "`date` INFO: Configuring logging on syslog port ${SYSLOG_PORT}"
+      LOG_OPT="--log-driver syslog --log-opt syslog-format=rfc3164 --log-opt syslog-address=udp://127.0.0.1:$SYSLOG_PORT"
+      logging_config="\
+        --env logging_debug_output=all \
+        --env logging_debug_format=graylog \
+        --env logging_command_output=all \
+        --env logging_command_format=graylog \
+        --env logging_system_output=all \
+        --env logging_system_format=graylog \
+        --env logging_event_output=all \
+        --env logging_event_format=graylog \
+        --env logging_kernel_output=all \
+        --env logging_kernel_format=graylog"
+      break
+    fi
+    echo "`date` WARNING: Cannot find syslog port re-try ${LOOP_COUNT}"
+    sleep 10
+    ((LOOP_COUNT++))
+  done
+fi
+
+if [ ${LOOP_COUNT} == 100 ]; then
+  echo "`date` ERROR: Failed to get syslog port exiting" | tee /dev/stderr
+  exit 1
 fi
 
 #Define a create script
