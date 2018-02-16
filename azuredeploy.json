@@ -38,7 +38,7 @@
       "type": "string",
       "defaultValue": "East US",
       "metadata": {
-        "description": "OMS Workspace Region for Log Analytics."
+        "description": "OMS Workspace Region for Log Analytics. Not used if Workspace Name is empty."
       },
       "allowedValues": [
         "East US",
