@@ -246,7 +246,7 @@ if [[ ${workspace_id} != "" ]]; then
     SYSLOG_PORT=$(sed -n 's/.*port \(.*\).*/\1/p' $SYSLOG_CONF)
   fi
   if [[ ${SYSLOG_PORT} == "" ]]; then
-    echo "`date` INFO: Defaulting syslog port to 25224"
+    echo "`date` INFO: Default syslog port to 25224"
     SYSLOG_PORT="25224"
   fi
   echo "`date` INFO: Configuring logging on syslog port ${SYSLOG_PORT}"
