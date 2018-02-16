@@ -4,11 +4,11 @@
     "parameters": {
       "workspaceName": {
         "type": "string",
-        "defaultValue": "",
+        "defaultValue": ""
       },
       "workspaceRegion": {
         "type": "string",
-        "defaultValue": "",
+        "defaultValue": ""
       }
     },
     "variables": {

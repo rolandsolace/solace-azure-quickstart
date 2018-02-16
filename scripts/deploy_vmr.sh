@@ -245,7 +245,7 @@ docker create \
  --ulimit nofile=2448:38048 \
  --log-driver syslog \
  --log-opt syslog-format=rfc3164 \
- --log-opt syslog-address=udp://127.0.0.1:25224 \
+ --log-opt syslog-address=udp://127.0.0.1:25226 \
  -v $(dirname ${password_file}):/run/secrets \
  -v jail:/usr/sw/jail \
  -v var:/usr/sw/var \

@@ -467,7 +467,7 @@
       "properties": {
         "publisher": "Microsoft.EnterpriseCloud.Monitoring",
         "type": "OmsAgentForLinux",
-        "typeHandlerVersion": "1.0",
+        "typeHandlerVersion": "1.4",
         "settings": {
           "workspaceId": "[reference(variables('solaceWorkspaceName')).outputs.workspaceId.value]"
         },
