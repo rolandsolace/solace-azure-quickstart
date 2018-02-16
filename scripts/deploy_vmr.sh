@@ -208,7 +208,7 @@ docker volume create --name=var
 docker volume create --name=softAdb
 docker volume create --name=adbBackup
 
-if [ $disk_size == "0" ]; then
+if [ ${disk_size} == "0" ]; then
   docker volume create --name=diagnostics
   docker volume create --name=internalSpool
   SPOOL_MOUNT="-v diagnostics:/var/lib/solace/diags -v internalSpool:/usr/sw/internalSpool"
@@ -233,24 +233,26 @@ else
 fi
 
 SYSLOG_CONF=/etc/rsyslog.d/95-omsagent.conf
-if [ -f $SYSLOG_CONF ]; then
-  echo "`date` INFO: Configuring logging"
+LOG_OPT=""
+logging_config=""
+if [ -f ${SYSLOG_CONF} ]; then
+  echo "`date` INFO: ${SYSLOG_CONF} exists"
   SYSLOG_PORT=$(sed -n 's/.*\@127.0.0.1:\(.*\).*/\1/p' $SYSLOG_CONF  | head -1)
-  LOG_OPT="--log-driver syslog --log-opt syslog-format=rfc3164 --log-opt syslog-address=udp://127.0.0.1:$SYSLOG_PORT"
-  logging_config="\
-    --env logging_debug_output=all \
-    --env logging_debug_format=graylog \
-    --env logging_command_output=all \
-    --env logging_command_format=graylog \
-    --env logging_system_output=all \
-    --env logging_system_format=graylog \
-    --env logging_event_output=all \
-    --env logging_event_format=graylog \
-    --env logging_kernel_output=all \
-    --env logging_kernel_format=graylog"
-else
-  LOG_OPT=""
-  logging_config=""
+  if [[ ${SYSLOG_PORT} != "" ]]; then
+    echo "`date` INFO: Configuring logging on syslog port ${SYSLOG_PORT}"
+    LOG_OPT="--log-driver syslog --log-opt syslog-format=rfc3164 --log-opt syslog-address=udp://127.0.0.1:$SYSLOG_PORT"
+    logging_config="\
+      --env logging_debug_output=all \
+      --env logging_debug_format=graylog \
+      --env logging_command_output=all \
+      --env logging_command_format=graylog \
+      --env logging_system_output=all \
+      --env logging_system_format=graylog \
+      --env logging_event_output=all \
+      --env logging_event_format=graylog \
+      --env logging_kernel_output=all \
+      --env logging_kernel_format=graylog"
+  fi
 fi
 
 #Define a create script
