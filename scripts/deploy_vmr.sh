@@ -9,14 +9,14 @@ number_of_instances=""
 password_file=""
 disk_size=""
 disk_volume=""
-solace_url=""
 workspace_id=""
+solace_url=""
 DEBUG="-vvvv"
 is_primary="false"
 
 verbose=0
 
-while getopts "c:i:n:p:s:v:u:w:" opt; do
+while getopts "c:i:n:p:s:v:w:u:" opt; do
     case "$opt" in
     c)  current_index=$OPTARG
         ;;
@@ -30,9 +30,9 @@ while getopts "c:i:n:p:s:v:u:w:" opt; do
         ;;
     v)  disk_volume=$OPTARG
         ;;
-    u)  solace_url=$OPTARG
-        ;;
     w)  workspace_id=$OPTARG
+        ;;
+    u)  solace_url=$OPTARG
         ;;
     esac
 done
@@ -42,8 +42,8 @@ shift $((OPTIND-1))
 
 verbose=1
 echo "`date` current_index=$current_index , ip_prefix=$ip_prefix , number_of_instances=$number_of_instances , \
-      password_file=$password_file , disk_size=$disk_size , disk_volume=$disk_volume , solace_url=$solace_url , \
-      workspace_id=$workspace_id , Leftovers: $@"
+      password_file=$password_file , disk_size=$disk_size , disk_volume=$disk_volume , workspace_id=$workspace_id , \
+      solace_url=$solace_url , Leftovers: $@"
 export password=`cat ${password_file}`
 
 #Install the logical volume manager and jq for json parsing
@@ -242,7 +242,7 @@ if [[ ${workspace_id} != "" ]]; then
   SYSLOG_CONF="/etc/opt/microsoft/omsagent/${workspace_id}/conf/omsagent.d/syslog.conf"
   SYSLOG_PORT=""
   if [ -f ${SYSLOG_CONF} ]; then
-    echo "`date` INFO: ${SYSLOG_CONF} found"
+    echo "`date` INFO: Configuration file for syslog found"
     SYSLOG_PORT=$(sed -n 's/.*port \(.*\).*/\1/p' $SYSLOG_CONF)
   fi
   if [[ ${SYSLOG_PORT} == "" ]]; then
