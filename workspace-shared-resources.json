@@ -4,8 +4,9 @@
     "parameters": {
       "workspaceName": {
         "type": "string",
+        "defaultValue": "",
         "metadata": {
-          "description": "Unique OMS Workspace Name for Log Analytics."
+          "description": "Unique OMS Workspace Name for Log Analytics. Leave this field empty to not deploy an OMS Workspace."
         }
       },
       "workspaceRegion": {
@@ -43,6 +44,7 @@
     },
     "resources": [
       {
+        "condition": "[not(empty(parameters('workspaceName')))]",
         "apiVersion": "2015-03-20",
         "type": "Microsoft.OperationalInsights/workspaces",
         "name": "[parameters('workspaceName')]",
@@ -68,6 +70,7 @@
         ]
       },
       {
+        "condition": "[not(empty(parameters('workspaceName')))]",
         "apiVersion": "2015-11-01-preview",
         "type": "Microsoft.OperationalInsights/workspaces/datasources",
         "name": "[concat(parameters('workspaceName'), '/syslog', copyindex())]",
@@ -101,6 +104,7 @@
         }
       },
       {
+        "condition": "[not(empty(parameters('workspaceName')))]",
         "apiVersion": "2015-11-01-preview",
         "type": "Microsoft.OperationsManagement/solutions",
         "name": "[concat(variables('containersMarketplaceName'), '(', parameters('workspaceName'), ')')]",

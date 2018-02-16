@@ -254,7 +254,6 @@
       }
     },
     {
-      "condition": "[not(empty(parameters('workspaceName')))]",
       "apiVersion": "2015-01-01",
       "type": "Microsoft.Resources/deployments",
       "name": "[variables('solaceWorkspaceName')]",
@@ -469,10 +468,10 @@
         "type": "OmsAgentForLinux",
         "typeHandlerVersion": "1.0",
         "settings": {
-          "workspaceId": "[if(empty(parameters('workspaceName')), '', [reference(concat('Microsoft.Resources/deployments/', variables('solaceWorkspaceName')), '2015-03-20').outputs.workspaceId.value])]"
+          "workspaceId": "[reference(variables('solaceWorkspaceName')).outputs.workspaceId.value]"
         },
         "protectedSettings": {
-          "workspaceKey": "[if(empty(parameters('workspaceName')), '', [reference(concat('Microsoft.Resources/deployments/', variables('solaceWorkspaceName')), '2015-03-20').outputs.workspaceKey.value])]"
+          "workspaceKey": "[reference(variables('solaceWorkspaceName')).outputs.workspaceKey.value]"
         }
       }
     },
