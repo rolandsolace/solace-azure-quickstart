@@ -10,12 +10,13 @@ password_file=""
 disk_size=""
 disk_volume=""
 solace_url=""
+workspace_id=""
 DEBUG="-vvvv"
 is_primary="false"
 
 verbose=0
 
-while getopts "c:i:n:p:s:v:u:" opt; do
+while getopts "c:i:n:p:s:v:u:w:" opt; do
     case "$opt" in
     c)  current_index=$OPTARG
         ;;
@@ -31,6 +32,8 @@ while getopts "c:i:n:p:s:v:u:" opt; do
         ;;
     u)  solace_url=$OPTARG
         ;;
+    w)  workspace_id=$OPTARG
+        ;;
     esac
 done
 
@@ -39,7 +42,8 @@ shift $((OPTIND-1))
 
 verbose=1
 echo "`date` current_index=$current_index , ip_prefix=$ip_prefix , number_of_instances=$number_of_instances , \
-      password_file=$password_file , disk_size=$disk_size , disk_volume=$disk_volume , solace_url=$solace_url , Leftovers: $@"
+      password_file=$password_file , disk_size=$disk_size , disk_volume=$disk_volume , solace_url=$solace_url , \
+      workspace_id=$workspace_id , Leftovers: $@"
 export password=`cat ${password_file}`
 
 #Install the logical volume manager and jq for json parsing
@@ -232,39 +236,32 @@ else
   SPOOL_MOUNT="-v /opt/vmr/diagnostics:/var/lib/solace/diags -v /opt/vmr/internalSpool:/usr/sw/internalSpool"
 fi
 
-SYSLOG_CONF=/etc/rsyslog.d/95-omsagent.conf
 LOG_OPT=""
 logging_config=""
-if [ -f ${SYSLOG_CONF} ]; then
-  echo "`date` INFO: ${SYSLOG_CONF} exists"
-  LOOP_COUNT=0
-  while [ $LOOP_COUNT -lt 100 ]; do
-    SYSLOG_PORT=$(sed -n 's/.*\@127.0.0.1:\(.*\).*/\1/p' $SYSLOG_CONF  | head -1)
-    if [[ ${SYSLOG_PORT} != "" ]]; then
-      echo "`date` INFO: Configuring logging on syslog port ${SYSLOG_PORT}"
-      LOG_OPT="--log-driver syslog --log-opt syslog-format=rfc3164 --log-opt syslog-address=udp://127.0.0.1:$SYSLOG_PORT"
-      logging_config="\
-        --env logging_debug_output=all \
-        --env logging_debug_format=graylog \
-        --env logging_command_output=all \
-        --env logging_command_format=graylog \
-        --env logging_system_output=all \
-        --env logging_system_format=graylog \
-        --env logging_event_output=all \
-        --env logging_event_format=graylog \
-        --env logging_kernel_output=all \
-        --env logging_kernel_format=graylog"
-      break
-    fi
-    echo "`date` WARNING: Cannot find syslog port re-try ${LOOP_COUNT}"
-    sleep 10
-    ((LOOP_COUNT++))
-  done
-fi
-
-if [ ${LOOP_COUNT} == 100 ]; then
-  echo "`date` ERROR: Failed to get syslog port exiting" | tee /dev/stderr
-  exit 1
+if [[ ${workspace_id} != "" ]]; then
+  SYSLOG_CONF="/etc/opt/microsoft/omsagent/${workspace_id}/conf/omsagent.d/syslog.conf"
+  SYSLOG_PORT=""
+  if [ -f ${SYSLOG_CONF} ]; then
+    echo "`date` INFO: ${SYSLOG_CONF} found"
+    SYSLOG_PORT=$(sed -n 's/.*port \(.*\).*/\1/p' $SYSLOG_CONF)
+  fi
+  if [[ ${SYSLOG_PORT} == "" ]]; then
+    echo "`date` INFO: Defaulting syslog port to 25224"
+    SYSLOG_PORT="25224"
+  fi
+  echo "`date` INFO: Configuring logging on syslog port ${SYSLOG_PORT}"
+  LOG_OPT="--log-driver syslog --log-opt syslog-format=rfc3164 --log-opt syslog-address=udp://127.0.0.1:$SYSLOG_PORT"
+  logging_config="\
+    --env logging_debug_output=all \
+    --env logging_debug_format=graylog \
+    --env logging_command_output=all \
+    --env logging_command_format=graylog \
+    --env logging_system_output=all \
+    --env logging_system_format=graylog \
+    --env logging_event_output=all \
+    --env logging_event_format=graylog \
+    --env logging_kernel_output=all \
+    --env logging_kernel_format=graylog"
 fi
 
 #Define a create script
