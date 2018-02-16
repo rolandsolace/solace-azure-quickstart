@@ -147,6 +147,7 @@
     "solaceLoadBalancerName": "SolaceLoadBalancer.Template",
     "loadBalancerSharedTemplateName": "loadbalancer-shared-resources.json",
     "solaceWorkspaceName": "SolaceWorkspace.Template",
+    "workspaceNoSharedTemplateName": "workspace-no-shared-resources.json",
     "workspaceSharedTemplateName": "workspace-shared-resources.json",
     "solaceInstallScriptName": "deploy_vmr.sh",
     "sempQueryScriptName": "semp_query.sh",
@@ -260,7 +261,7 @@
       "properties": {
         "mode": "Incremental",
         "templateLink": {
-          "uri": "[concat(variables('scriptUrl'), variables('workspaceSharedTemplateName'))]",
+          "uri": "[if(empty(parameters('workspaceName')), concat(variables('scriptUrl'), variables('workspaceNoSharedTemplateName')), concat(variables('scriptUrl'), variables('workspaceSharedTemplateName')))]",
           "contentVersion": "1.0.0.0"
         },
         "parameters": {
