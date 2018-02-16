@@ -2,6 +2,29 @@
     "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
+      "workspaceName": {
+        "type": "string",
+        "metadata": {
+          "description": "Unique OMS Workspace Name for Log Analytics."
+        }
+      },
+      "workspaceRegion": {
+        "type": "string",
+        "defaultValue": "East US",
+        "metadata": {
+          "description": "OMS Workspace Region for Log Analytics."
+        },
+        "allowedValues": [
+          "East US",
+          "West Europe",
+          "Southeast Asia",
+          "Australia Southeast",
+          "Japan East",
+          "UK South",
+          "Central India",
+          "Canada Central"
+        ]
+      }
     },
     "variables": {
     },
