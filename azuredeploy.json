@@ -141,7 +141,9 @@
     "OSDiskName": "osdiskfordockersimple",
     "dataDiskName": "datadiskfordockersimple",
     "nicName": "myVMNicD",
-    "scriptUrl": "https://raw.githubusercontent.com/rolandsolace/solace-azure-quickstart/dev/",
+    "baseUrl": "https://raw.githubusercontent.com/rolandsolace/solace-azure-quickstart/dev/",
+    "nestedUrl": "[concat(variables('baseUrl'), 'nested/')]",
+    "scriptsUrl": "[concat(variables('baseUrl'), 'scripts/')]",
     "solaceSecurityName": "SolaceSecurity.Template",
     "securitySharedTemplateName": "security-shared-resources.json",
     "solaceLoadBalancerName": "SolaceLoadBalancer.Template",
@@ -212,7 +214,7 @@
       "properties": {
         "mode": "Incremental",
         "templateLink": {
-          "uri": "[concat(variables('scriptUrl'), 'nested/', variables('securitySharedTemplateName'))]",
+          "uri": "[concat(variables('nestedUrl'), variables('securitySharedTemplateName'))]",
           "contentVersion": "1.0.0.0"
         },
         "parameters": {
@@ -232,7 +234,7 @@
       "properties": {
         "mode": "Incremental",
         "templateLink": {
-          "uri": "[concat(variables('scriptUrl'), 'nested/', variables('loadBalancerSharedTemplateName'))]",
+          "uri": "[concat(variables('nestedUrl'), variables('loadBalancerSharedTemplateName'))]",
           "contentVersion": "1.0.0.0"
         },
         "parameters": {
@@ -261,7 +263,7 @@
       "properties": {
         "mode": "Incremental",
         "templateLink": {
-          "uri": "[if(empty(parameters('workspaceName')), concat(variables('scriptUrl'), 'nested/', variables('workspaceDisabledSharedTemplateName')), concat(variables('scriptUrl'), 'nested/', variables('workspaceEnabledSharedTemplateName')))]",
+          "uri": "[if(empty(parameters('workspaceName')), concat(variables('nestedUrl'), variables('workspaceDisabledSharedTemplateName')), concat(variables('nestedUrl'), variables('workspaceEnabledSharedTemplateName')))]",
           "contentVersion": "1.0.0.0"
         },
         "parameters": {
@@ -496,8 +498,8 @@
         "settings": {
           "fileUris": [
             "[parameters('solaceVmrUri')]",
-            "[concat(variables('scriptUrl'), 'scripts/', variables('solaceInstallScriptName'))]",
-            "[concat(variables('scriptUrl'), 'scripts/', variables('sempQueryScriptName'))]"
+            "[concat(variables('scriptsUrl'), variables('solaceInstallScriptName'))]",
+            "[concat(variables('scriptsUrl'), variables('sempQueryScriptName'))]"
           ]
         },
         "protectedSettings": {
