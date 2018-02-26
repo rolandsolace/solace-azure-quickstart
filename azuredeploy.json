@@ -147,8 +147,8 @@
     "solaceLoadBalancerName": "SolaceLoadBalancer.Template",
     "loadBalancerSharedTemplateName": "loadbalancer-shared-resources.json",
     "solaceWorkspaceName": "SolaceWorkspace.Template",
-    "workspaceNoSharedTemplateName": "workspace-no-shared-resources.json",
-    "workspaceSharedTemplateName": "workspace-shared-resources.json",
+    "workspaceEnabledSharedTemplateName": "workspace-enabled-shared-resources.json",
+    "workspaceDisabledSharedTemplateName": "workspace-disabled-shared-resources.json",
     "solaceInstallScriptName": "deploy_vmr.sh",
     "sempQueryScriptName": "semp_query.sh",
     "publicIPAddressName": "myPublicIPD",
@@ -212,7 +212,7 @@
       "properties": {
         "mode": "Incremental",
         "templateLink": {
-          "uri": "[concat(variables('scriptUrl'), variables('securitySharedTemplateName'))]",
+          "uri": "[concat(variables('scriptUrl'), 'nested/', variables('securitySharedTemplateName'))]",
           "contentVersion": "1.0.0.0"
         },
         "parameters": {
@@ -232,7 +232,7 @@
       "properties": {
         "mode": "Incremental",
         "templateLink": {
-          "uri": "[concat(variables('scriptUrl'), variables('loadBalancerSharedTemplateName'))]",
+          "uri": "[concat(variables('scriptUrl'), 'nested/', variables('loadBalancerSharedTemplateName'))]",
           "contentVersion": "1.0.0.0"
         },
         "parameters": {
@@ -261,7 +261,7 @@
       "properties": {
         "mode": "Incremental",
         "templateLink": {
-          "uri": "[if(empty(parameters('workspaceName')), concat(variables('scriptUrl'), variables('workspaceNoSharedTemplateName')), concat(variables('scriptUrl'), variables('workspaceSharedTemplateName')))]",
+          "uri": "[if(empty(parameters('workspaceName')), concat(variables('scriptUrl'), 'nested/', variables('workspaceDisabledSharedTemplateName')), concat(variables('scriptUrl'), 'nested/', variables('workspaceEnabledSharedTemplateName')))]",
           "contentVersion": "1.0.0.0"
         },
         "parameters": {
@@ -501,7 +501,7 @@
           ]
         },
         "protectedSettings": {
-          "commandToExecute": "[concat('mkdir -p -m 600 ', variables('adminPasswordDir'), '; echo ', parameters('adminPassword'), ' > ', variables('adminPasswordFile'), '; bash ', variables('solaceInstallScriptName'), ' -c ', copyindex(), ' -i ', variables('nodeAddressPrefix'), ' -n ', variables('numberOfInstances'), ' -p ', variables('adminPasswordFile'), ' -s ', if(equals(copyindex(), variables('monitorNodeIndex')), '0', parameters('dataDiskSize')), if(equals(copyindex(), variables('monitorNodeIndex')), '', concat(' -v ', variables('dataDiskVolume'))), ' -w ', reference(variables('solaceWorkspaceName')).outputs.workspaceId.value, ' -u ', parameters('solaceVmrUri'))]"
+          "commandToExecute": "[concat('mkdir -p -m 600 ', variables('adminPasswordDir'), '; echo ', parameters('adminPassword'), ' > ', variables('adminPasswordFile'), '; bash ', variables('solaceInstallScriptName'), ' -c ', copyindex(), ' -i ', variables('nodeAddressPrefix'), ' -n ', variables('numberOfInstances'), ' -p ', variables('adminPasswordFile'), ' -s ', if(equals(copyindex(), variables('monitorNodeIndex')), '0', parameters('dataDiskSize')), if(equals(copyindex(), variables('monitorNodeIndex')), '', concat(' -v ', variables('dataDiskVolume'))), if(empty(parameters('workspaceName')), '', concat(' -w ', reference(variables('solaceWorkspaceName')).outputs.workspaceId.value)), ' -u ', parameters('solaceVmrUri'))]"
         }
       }
     }
