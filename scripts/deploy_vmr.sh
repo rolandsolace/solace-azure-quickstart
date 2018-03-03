@@ -212,7 +212,7 @@ docker volume create --name=var
 docker volume create --name=softAdb
 docker volume create --name=adbBackup
 
-if [ ${disk_size} == "0" ]; then
+if [ ${disk_size} != "" ]; then
   docker volume create --name=diagnostics
   docker volume create --name=internalSpool
   SPOOL_MOUNT="-v diagnostics:/var/lib/solace/diags -v internalSpool:/usr/sw/internalSpool"
