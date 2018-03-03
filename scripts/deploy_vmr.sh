@@ -215,6 +215,7 @@ if [ ${disk_size} == "" ]; then
   SPOOL_MOUNT="-v diagnostics:/var/lib/solace/diags -v internalSpool:/usr/sw/internalSpool"
 else
   # Look for unpartitioned disks
+  disk_volume=""
   DEVS=($(ls -1 /dev/sd*|egrep -v "[0-9]$"))
   for DEV in "${DEVS[@]}"; do
     # Check each device if there is a "1" partition.
