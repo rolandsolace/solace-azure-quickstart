@@ -221,11 +221,15 @@ else
     # Check each device if there is a "1" partition.
     # If not, assume it is not partitioned.
     if [ ! -b ${DEV}1 ]; then
+      echo "`date` INFO: Device with no primary partion found"
       disk_volume="${DEV}"
       break
     fi
   done
-
+  if [ ${disk_volume} == "" ]; then
+    echo "`date` INFO: Default disk to /dev/sdc"
+    disk_volume="/dev/sdc"
+  fi
   echo "`date` INFO: Create primary partition on new disk ${disk_volume} of size ${disk_size}"
 
   (
