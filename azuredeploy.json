@@ -130,6 +130,20 @@
         "HighAvailability",
         "SingleNode"
       ]
+    },
+    "_artifactsLocation": {
+      "type": "string",
+      "metadata": {
+          "description": "The base URI where artifacts required by this template are located. When the template is deployed using the accompanying scripts, a private location in the subscription will be used and this value will be automatically generated."
+      },
+      "defaultValue": "https://raw.githubusercontent.com/rolandsolace/solace-azure-quickstart/dev/"
+    },
+    "_artifactsLocationSasToken": {
+      "type": "securestring",
+      "metadata": {
+          "description": "The sasToken required to access _artifactsLocation.  When the template is deployed using the accompanying scripts, a sasToken will be automatically generated."
+      },
+      "defaultValue": ""
     }
   },
   "variables": {
@@ -141,9 +155,8 @@
     "OSDiskName": "osdiskfordockersimple",
     "dataDiskName": "datadiskfordockersimple",
     "nicName": "myVMNicD",
-    "baseUrl": "https://raw.githubusercontent.com/rolandsolace/solace-azure-quickstart/dev/",
-    "nestedUrl": "[concat(variables('baseUrl'), 'nested/')]",
-    "scriptsUrl": "[concat(variables('baseUrl'), 'scripts/')]",
+    "nestedUrl": "[concat(parameters('_artifactsLocation'), 'nested/')]",
+    "scriptsUrl": "[concat(parameters('_artifactsLocation'), 'scripts/')]",
     "solaceSecurityName": "SolaceSecurity.Template",
     "securitySharedTemplateName": "security-shared-resources.json",
     "solaceLoadBalancerName": "SolaceLoadBalancer.Template",
